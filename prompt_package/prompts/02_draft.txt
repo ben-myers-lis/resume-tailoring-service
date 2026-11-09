@@ -1,0 +1,14 @@
+STAGE: DRAFT
+Apply 00_core.txt. Input: request, normalized, keyword reference, assessment rubric. Output: one object matching draft.schema.json. Work freshly from the supplied original sources for NEW_JD. The keyword reference is selection vocabulary only.
+
+Plan across every role before drafting. Match requirements to the strongest direct/transferable facts and preserve business purpose, historical scope, and ownership. Build the skills selection from the full-career inventory. Account for all technical terms and alternatives, including gaps.
+
+Create the summary, grouped unbolded skills, optional role scope sentences, and concise experience bullets. Preserve supplied history through role_id references; do not rewrite the identity/history in generated output. Use genuine complementary technologies and concrete implementation mechanisms naturally. Follow natural emphasis and selective metric targets without quotas. Omit ungrounded summary/skills/experience claims in APPLICATION. In ILLUSTRATIVE, record generated assumptions and retain visible notices.
+
+Each material factual statement needs a claim ledger entry. Link claims to normalized fact IDs. Use SUPPORTED for direct evidence, TRANSFERABLE for accurately scoped related experience, and ILLUSTRATIVE for generated examples. Do not create an unsupported APPLICATION claim with a plausible source ID. A compound claim needs evidence for each material part. A skill-list item also needs claim IDs.
+
+Create stable bullet IDs within role IDs. Never reuse a removed ID for a different accomplishment. Each metric needs a register entry and corresponding bullet reference, baseline/result/unit and known measurement context, with unknown fields left null. A derived metric includes its calculation and source facts. Hypothetical metrics require the configured authorization and explicit notices.
+
+Represent highlights as exact text phrases with a one-based occurrence and kind TECHNICAL or BUSINESS. Do not insert raw Markdown bold inside text. Omit highlights where they add nothing. The renderer applies them, keeping skill lines unbolded.
+
+Return a requirement coverage row for every normalized requirement and a term decision for every unique JD technical term. Include role plans, gaps, technical/company limits, assumptions, and at most five nonblocking confirmation items. Status is COMPLETE_DRAFT, INCOMPLETE_EVIDENCE, or ILLUSTRATIVE. Do not claim final assessment or layout verification at this stage. Empty summary/bullet arrays are valid when evidence is absent.

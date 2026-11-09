@@ -1,0 +1,71 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "title-only-05_transferable_analyst",
+  "run_type": "NEW_JD",
+  "as_of_date": "2026-11-08",
+  "candidate": {
+    "candidate_id": "cand-05_transferable_analyst",
+    "profile_version": "title-only-1",
+    "name": "Sofia Marchetti",
+    "headline": null,
+    "contacts": [
+      {
+        "kind": "EMAIL",
+        "value": "sofia.marchetti@example.com"
+      },
+      {
+        "kind": "LINKEDIN",
+        "value": "linkedin.com/in/sofia-marchetti-example"
+      }
+    ],
+    "employment": [
+      {
+        "role_id": "R1",
+        "employer": "Harborview Insurance",
+        "official_title": "Senior Data Analyst",
+        "start_date": "2023-01",
+        "end_date": null,
+        "is_current": true,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R2",
+        "employer": "Harborview Insurance",
+        "official_title": "Data Analyst",
+        "start_date": "2020-10",
+        "end_date": "2022-12",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      }
+    ],
+    "education": [
+      "B.A. Economics, Riverside University, 2020"
+    ],
+    "certifications": []
+  },
+  "sources": [],
+  "jd": {
+    "jd_id": "jd-mle_mid",
+    "company": "Cascade Insurance",
+    "role": "Machine Learning Engineer",
+    "text": "Required: 3+ years in data science, analytics engineering, or ML; Python; SQL; experience training and evaluating ML models; experience with scikit-learn or similar. Preferred: experience deploying models, Airflow, insurance or financial data. Responsibilities: build pricing and claims models, productionize models with engineering, communicate results to business stakeholders."
+  },
+  "external_context": [],
+  "options": {
+    "mode": "APPLICATION",
+    "metric_policy": "EVIDENCED_ONLY",
+    "hypothetical_metrics_authorized": false,
+    "illustrative_scenario": null,
+    "output_mode": "RESUME_AND_REPORT",
+    "formats": [
+      "MARKDOWN"
+    ],
+    "max_repair_rounds": 1,
+    "keyword_category_ids": [],
+    "bullet_ceilings": [],
+    "max_pages": 2
+  },
+  "revision": null
+}

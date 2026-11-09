@@ -1,0 +1,1468 @@
+{
+  "version": "1.0.0",
+  "source_date": "2026-10-22",
+  "purpose": "Vocabulary only. Never evidence of candidate ability. No universal required stack.",
+  "categories": [
+    {
+      "id": "K01",
+      "name": "Programming Languages and Software Engineering",
+      "groups": [
+        {
+          "name": "Primary languages",
+          "terms": [
+            "Python",
+            "SQL"
+          ]
+        },
+        {
+          "name": "Additional languages and platforms",
+          "terms": [
+            "TypeScript",
+            "JavaScript",
+            "Java",
+            "Go",
+            "C#",
+            ".NET",
+            "Scala",
+            "Kotlin",
+            "C++",
+            "Bash"
+          ]
+        },
+        {
+          "name": "Engineering fundamentals",
+          "terms": [
+            "Data Structures and Algorithms",
+            "Object-Oriented Programming",
+            "Design Patterns",
+            "Type Hints",
+            "Asynchronous Programming",
+            "Concurrency",
+            "Multiprocessing",
+            "Memory Management",
+            "Performance Profiling"
+          ]
+        },
+        {
+          "name": "Development practices",
+          "terms": [
+            "Git",
+            "GitHub",
+            "Linux",
+            "Code Reviews",
+            "Unit Testing",
+            "Integration Testing",
+            "Automated Testing",
+            "Dependency Management",
+            "Software Development Lifecycle"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K02",
+      "name": "AI and Machine Learning Foundations",
+      "groups": [
+        {
+          "name": "Core disciplines",
+          "terms": [
+            "Artificial Intelligence",
+            "Machine Learning Engineering",
+            "Applied Machine Learning",
+            "Classical Machine Learning",
+            "Statistical Machine Learning",
+            "Statistical Modeling",
+            "Deep Learning",
+            "Natural Language Processing (NLP)",
+            "Computer Vision",
+            "Generative AI",
+            "Conversational AI",
+            "Multimodal AI"
+          ]
+        },
+        {
+          "name": "Methods",
+          "terms": [
+            "Supervised Learning",
+            "Unsupervised Learning",
+            "Reinforcement Learning",
+            "Classification",
+            "Regression",
+            "Clustering",
+            "Anomaly Detection",
+            "Recommendation Systems",
+            "Time-Series Forecasting"
+          ]
+        },
+        {
+          "name": "Model development",
+          "terms": [
+            "Feature Engineering",
+            "Feature Selection",
+            "Cross-Validation",
+            "Hyperparameter Optimization",
+            "Regularization",
+            "Class Imbalance Handling",
+            "Data Leakage Prevention",
+            "Error Analysis"
+          ]
+        },
+        {
+          "name": "Statistical methods",
+          "terms": [
+            "Probability",
+            "Hypothesis Testing",
+            "Experiment Design",
+            "A/B Testing",
+            "Numerical Optimization"
+          ]
+        },
+        {
+          "name": "Algorithms",
+          "terms": [
+            "Linear and Logistic Regression",
+            "Decision Trees",
+            "Random Forests",
+            "Gradient Boosting",
+            "XGBoost",
+            "LightGBM",
+            "CatBoost"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K03",
+      "name": "ML Frameworks and Scientific Computing",
+      "groups": [
+        {
+          "name": "Frameworks and libraries",
+          "terms": [
+            "PyTorch",
+            "TensorFlow",
+            "Keras",
+            "Scikit-learn",
+            "Hugging Face Transformers",
+            "Hugging Face Datasets",
+            "Hugging Face Tokenizers",
+            "Sentence Transformers",
+            "NumPy",
+            "Pandas",
+            "SciPy",
+            "Polars",
+            "JAX"
+          ]
+        }
+      ],
+      "notes": [
+        "These are alternatives and complementary tools. Select the libraries supported by the candidate’s experience."
+      ]
+    },
+    {
+      "id": "K04",
+      "name": "LLM Engineering and Context Management",
+      "groups": [
+        {
+          "name": "Model concepts",
+          "terms": [
+            "Large Language Models (LLMs)",
+            "Foundation Models",
+            "Transformer Architecture",
+            "Attention Mechanisms",
+            "Tokenization",
+            "Open-Weight Models"
+          ]
+        },
+        {
+          "name": "Application development",
+          "terms": [
+            "LLM Engineering",
+            "LLM Application Development",
+            "Model Selection",
+            "Model Routing",
+            "Model Fallbacks",
+            "Multi-Model Integration"
+          ]
+        },
+        {
+          "name": "Prompting",
+          "terms": [
+            "Prompt Engineering",
+            "System Prompts",
+            "Prompt Templates",
+            "Few-Shot Prompting",
+            "Structured Prompting",
+            "Prompt Versioning",
+            "Prompt Optimization"
+          ]
+        },
+        {
+          "name": "Context handling",
+          "terms": [
+            "Context Engineering",
+            "Context Construction",
+            "Context Window Management",
+            "Conversation History Management",
+            "Context Compression",
+            "Token Budgeting"
+          ]
+        },
+        {
+          "name": "Model interaction",
+          "terms": [
+            "Function Calling / Tool Calling",
+            "Structured Outputs",
+            "JSON Schema Validation",
+            "Streaming Responses",
+            "Output Parsing"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K05",
+      "name": "Agentic AI and Multi Agent Systems",
+      "groups": [
+        {
+          "name": "Architecture",
+          "terms": [
+            "AI Agent Development",
+            "Production Agent Systems",
+            "Agentic Workflows",
+            "Agent Architecture",
+            "Agent Infrastructure",
+            "Multi-Agent Systems"
+          ]
+        },
+        {
+          "name": "Execution patterns",
+          "terms": [
+            "ReAct",
+            "Planning and Execution",
+            "Task Decomposition",
+            "Tool Selection",
+            "Tool Execution",
+            "Agent Routing",
+            "Agent Handoffs",
+            "Supervisor–Worker Patterns",
+            "Multi-Agent Coordination",
+            "Agent Coordination Protocols"
+          ]
+        },
+        {
+          "name": "State and memory",
+          "terms": [
+            "Agent State Management",
+            "Workflow State Management",
+            "Short-Term Memory",
+            "Long-Term Memory",
+            "Session Management",
+            "Persistent Memory",
+            "Checkpointing"
+          ]
+        },
+        {
+          "name": "Reliability",
+          "terms": [
+            "Durable Execution",
+            "Workflow Recovery",
+            "Retries",
+            "Timeouts",
+            "Failure Handling",
+            "Loop Termination",
+            "Execution Budgets"
+          ]
+        },
+        {
+          "name": "Human oversight",
+          "terms": [
+            "Human-in-the-Loop Workflows",
+            "Approval Gates",
+            "Human Escalation",
+            "Tool Permission Controls"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K06",
+      "name": "Agent Frameworks and Protocols",
+      "groups": [
+        {
+          "name": "Frameworks",
+          "terms": [
+            "LangChain",
+            "LangGraph",
+            "LlamaIndex",
+            "CrewAI",
+            "AutoGen",
+            "PydanticAI",
+            "Strands Agents",
+            "Semantic Kernel",
+            "Haystack"
+          ]
+        },
+        {
+          "name": "Agent SDKs",
+          "terms": [
+            "OpenAI Agents SDK",
+            "Claude Agent SDK",
+            "Google Agent Development Kit (ADK)"
+          ]
+        },
+        {
+          "name": "Interoperability",
+          "terms": [
+            "Model Context Protocol (MCP)",
+            "MCP Servers",
+            "MCP Clients",
+            "FastMCP",
+            "Agent-to-Agent (A2A) Protocol"
+          ]
+        },
+        {
+          "name": "Integration capabilities",
+          "terms": [
+            "Custom Tool Development",
+            "Tool Schemas",
+            "Agent Service Integration",
+            "Custom Agent Orchestration"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K07",
+      "name": "Retrieval Augmented Generation and Document Processing",
+      "groups": [
+        {
+          "name": "RAG architecture",
+          "terms": [
+            "Retrieval-Augmented Generation (RAG)",
+            "Agentic RAG",
+            "GraphRAG",
+            "Multimodal RAG",
+            "Retrieval Pipelines",
+            "Grounded Generation"
+          ]
+        },
+        {
+          "name": "Ingestion",
+          "terms": [
+            "Document Ingestion",
+            "Document Parsing",
+            "PDF Processing",
+            "Optical Character Recognition (OCR)",
+            "Layout-Aware Extraction",
+            "Metadata Extraction"
+          ]
+        },
+        {
+          "name": "Chunking",
+          "terms": [
+            "Document Chunking",
+            "Recursive Chunking",
+            "Semantic Chunking",
+            "Chunk Overlap",
+            "Parent–Child Retrieval"
+          ]
+        },
+        {
+          "name": "Retrieval",
+          "terms": [
+            "Information Retrieval",
+            "Dense Retrieval",
+            "Sparse Retrieval",
+            "Semantic Search",
+            "Vector Search",
+            "Hybrid Search",
+            "BM25",
+            "Metadata Filtering"
+          ]
+        },
+        {
+          "name": "Retrieval improvement",
+          "terms": [
+            "Query Rewriting",
+            "Query Expansion",
+            "Multi-Query Retrieval",
+            "Reranking",
+            "Cross-Encoders",
+            "Reciprocal Rank Fusion (RRF)",
+            "Contextual Compression"
+          ]
+        },
+        {
+          "name": "Production controls",
+          "terms": [
+            "Incremental Indexing",
+            "Index Refresh",
+            "Data Freshness",
+            "Access-Controlled Retrieval",
+            "Source Attribution",
+            "Citation Generation"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K08",
+      "name": "Embeddings and Search Infrastructure",
+      "groups": [
+        {
+          "name": "Embeddings",
+          "terms": [
+            "Text Embeddings",
+            "Multimodal Embeddings",
+            "Embedding Pipelines",
+            "Embedding Model Selection",
+            "Embedding Evaluation"
+          ]
+        },
+        {
+          "name": "Similarity and indexing",
+          "terms": [
+            "Cosine Similarity",
+            "Dot Product Similarity",
+            "Approximate Nearest Neighbor (ANN) Search",
+            "HNSW",
+            "Vector Indexing"
+          ]
+        },
+        {
+          "name": "Vector stores and databases",
+          "terms": [
+            "Pinecone",
+            "Weaviate",
+            "Qdrant",
+            "Milvus",
+            "ChromaDB",
+            "pgvector"
+          ]
+        },
+        {
+          "name": "Search technologies",
+          "terms": [
+            "FAISS",
+            "OpenSearch",
+            "Elasticsearch",
+            "Azure AI Search"
+          ]
+        },
+        {
+          "name": "Graph technologies",
+          "terms": [
+            "Neo4j",
+            "Knowledge Graphs",
+            "Graph Modeling",
+            "Cypher"
+          ]
+        }
+      ],
+      "notes": [
+        "FAISS is a similarity-search library, not a standalone database."
+      ]
+    },
+    {
+      "id": "K09",
+      "name": "Model Training and Fine Tuning",
+      "groups": [
+        {
+          "name": "Training approaches",
+          "terms": [
+            "Model Training",
+            "Foundation Model Pretraining",
+            "Continued Pretraining",
+            "Supervised Fine-Tuning (SFT)",
+            "Instruction Tuning",
+            "LLM Fine-Tuning"
+          ]
+        },
+        {
+          "name": "Efficient adaptation",
+          "terms": [
+            "Parameter-Efficient Fine-Tuning (PEFT)",
+            "LoRA",
+            "QLoRA",
+            "Adapter Tuning"
+          ]
+        },
+        {
+          "name": "Preference optimization",
+          "terms": [
+            "Reinforcement Learning from Human Feedback (RLHF)",
+            "Direct Preference Optimization (DPO)",
+            "Reward Modeling"
+          ]
+        },
+        {
+          "name": "Training data",
+          "terms": [
+            "Dataset Curation",
+            "Data Annotation",
+            "Synthetic Data Generation",
+            "Data Deduplication",
+            "Training Data Quality"
+          ]
+        },
+        {
+          "name": "Optimization",
+          "terms": [
+            "Knowledge Distillation",
+            "Quantization",
+            "Pruning",
+            "Mixed-Precision Training",
+            "Gradient Accumulation",
+            "Gradient Checkpointing"
+          ]
+        },
+        {
+          "name": "Tools",
+          "terms": [
+            "Hugging Face PEFT",
+            "TRL",
+            "Accelerate",
+            "bitsandbytes",
+            "Optuna"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K10",
+      "name": "AI Evaluation and Quality Assurance",
+      "groups": [
+        {
+          "name": "Evaluation design",
+          "terms": [
+            "Model Evaluation",
+            "LLM Evaluation",
+            "Agent Evaluation",
+            "Workflow Evaluation",
+            "Evaluation-Driven Development",
+            "Offline Evaluation",
+            "Online Evaluation",
+            "Benchmarking",
+            "Regression Evaluation"
+          ]
+        },
+        {
+          "name": "Datasets and grading",
+          "terms": [
+            "Golden Test Sets",
+            "Evaluation Dataset Curation",
+            "Human Evaluation",
+            "LLM-as-a-Judge",
+            "Rubric-Based Evaluation",
+            "Adversarial Testing"
+          ]
+        },
+        {
+          "name": "RAG quality",
+          "terms": [
+            "Faithfulness",
+            "Groundedness",
+            "Answer Relevance",
+            "Context Precision",
+            "Context Recall",
+            "Citation Accuracy"
+          ]
+        },
+        {
+          "name": "Retrieval metrics",
+          "terms": [
+            "Precision@K",
+            "Recall@K",
+            "Mean Reciprocal Rank (MRR)",
+            "Normalized Discounted Cumulative Gain (NDCG)"
+          ]
+        },
+        {
+          "name": "Agent metrics",
+          "terms": [
+            "Task Success Rate",
+            "Tool Selection Accuracy",
+            "Tool Argument Accuracy",
+            "Trajectory Evaluation",
+            "Workflow Completion Rate"
+          ]
+        },
+        {
+          "name": "ML metrics",
+          "terms": [
+            "Precision",
+            "Recall",
+            "F1 Score",
+            "ROC-AUC",
+            "PR-AUC",
+            "MAE",
+            "RMSE"
+          ]
+        },
+        {
+          "name": "Tools",
+          "terms": [
+            "Ragas",
+            "DeepEval",
+            "Promptfoo",
+            "OpenAI Evals"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K11",
+      "name": "Observability and Reliability",
+      "groups": [
+        {
+          "name": "Observability",
+          "terms": [
+            "LLM Observability",
+            "Agent Tracing",
+            "Distributed Tracing",
+            "Structured Logging",
+            "Metrics",
+            "Dashboards",
+            "Alerting",
+            "Observability for Non-Deterministic Systems"
+          ]
+        },
+        {
+          "name": "Diagnostics",
+          "terms": [
+            "Prompt and Response Logging",
+            "Tool-Call Tracing",
+            "Failure Analysis",
+            "Root Cause Analysis",
+            "Incident Response"
+          ]
+        },
+        {
+          "name": "Performance",
+          "terms": [
+            "Latency Monitoring",
+            "p95/p99 Latency",
+            "Time to First Token (TTFT)",
+            "Tokens per Second",
+            "Throughput",
+            "Error Rates"
+          ]
+        },
+        {
+          "name": "Cost",
+          "terms": [
+            "Token Usage Tracking",
+            "Cost per Request",
+            "Cost per Successful Task",
+            "Inference Cost Optimization"
+          ]
+        },
+        {
+          "name": "ML monitoring",
+          "terms": [
+            "Data Drift",
+            "Concept Drift",
+            "Model Performance Monitoring"
+          ]
+        },
+        {
+          "name": "Tools",
+          "terms": [
+            "LangSmith",
+            "Langfuse",
+            "Arize Phoenix",
+            "OpenTelemetry",
+            "Prometheus",
+            "Grafana",
+            "Datadog",
+            "Evidently"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K12",
+      "name": "MLOps and LLMOps",
+      "groups": [
+        {
+          "name": "Lifecycle management",
+          "terms": [
+            "MLOps",
+            "LLMOps",
+            "Experiment Tracking",
+            "Model Registry",
+            "Model Versioning",
+            "Dataset Versioning",
+            "Artifact Management",
+            "Reproducible Training"
+          ]
+        },
+        {
+          "name": "Pipelines",
+          "terms": [
+            "Training Pipelines",
+            "Evaluation Pipelines",
+            "Deployment Pipelines",
+            "Continuous Training",
+            "Automated Retraining"
+          ]
+        },
+        {
+          "name": "Release practices",
+          "terms": [
+            "Model Promotion",
+            "Canary Deployment",
+            "Blue–Green Deployment",
+            "Shadow Deployment",
+            "Rollback"
+          ]
+        },
+        {
+          "name": "Feature management",
+          "terms": [
+            "Feature Stores",
+            "Offline and Online Features",
+            "Training–Serving Consistency"
+          ]
+        },
+        {
+          "name": "Tools",
+          "terms": [
+            "MLflow",
+            "Weights & Biases",
+            "DVC",
+            "Kubeflow",
+            "Metaflow",
+            "Feast"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K13",
+      "name": "Inference and Model Serving",
+      "groups": [
+        {
+          "name": "Serving patterns",
+          "terms": [
+            "Batch Inference",
+            "Online Inference",
+            "Real-Time Inference",
+            "Streaming Inference",
+            "Low-Latency Serving"
+          ]
+        },
+        {
+          "name": "Optimization",
+          "terms": [
+            "Dynamic Batching",
+            "Continuous Batching",
+            "KV Cache Management",
+            "Prefix Caching",
+            "Speculative Decoding",
+            "Model Quantization"
+          ]
+        },
+        {
+          "name": "Scaling",
+          "terms": [
+            "GPU Utilization Optimization",
+            "Autoscaling",
+            "Load Balancing",
+            "Concurrency Management",
+            "Cold-Start Optimization"
+          ]
+        },
+        {
+          "name": "Tools",
+          "terms": [
+            "vLLM",
+            "SGLang",
+            "TensorRT",
+            "TensorRT-LLM",
+            "NVIDIA Triton Inference Server",
+            "ONNX",
+            "ONNX Runtime",
+            "KServe",
+            "BentoML",
+            "Ray Serve"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K14",
+      "name": "Distributed Training and GPU Computing",
+      "groups": [
+        {
+          "name": "Parallelism",
+          "terms": [
+            "Distributed Data Parallel (DDP)",
+            "Fully Sharded Data Parallel (FSDP)",
+            "Tensor Parallelism",
+            "Pipeline Parallelism",
+            "Model Parallelism"
+          ]
+        },
+        {
+          "name": "Infrastructure",
+          "terms": [
+            "GPU Clusters",
+            "Multi-Node Training",
+            "Distributed Checkpointing",
+            "Fault Recovery"
+          ]
+        },
+        {
+          "name": "Acceleration",
+          "terms": [
+            "CUDA",
+            "ROCm",
+            "NCCL",
+            "GPU Memory Optimization"
+          ]
+        },
+        {
+          "name": "Frameworks",
+          "terms": [
+            "DeepSpeed",
+            "Megatron-LM",
+            "PyTorch Distributed",
+            "Ray Train"
+          ]
+        },
+        {
+          "name": "Profiling",
+          "terms": [
+            "PyTorch Profiler",
+            "NVIDIA Nsight",
+            "Perfetto",
+            "GPU Trace Analysis",
+            "Cluster Failure Diagnosis"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K15",
+      "name": "Backend Development and API Engineering",
+      "groups": [
+        {
+          "name": "Frameworks",
+          "terms": [
+            "FastAPI",
+            "Flask",
+            "Django",
+            "Pydantic"
+          ]
+        },
+        {
+          "name": "Interfaces",
+          "terms": [
+            "REST APIs",
+            "GraphQL",
+            "gRPC",
+            "WebSockets",
+            "Server-Sent Events (SSE)",
+            "Webhooks"
+          ]
+        },
+        {
+          "name": "Contracts",
+          "terms": [
+            "OpenAPI",
+            "JSON Schema",
+            "Protocol Buffers (Protobuf)",
+            "API Versioning",
+            "Request Validation"
+          ]
+        },
+        {
+          "name": "Services",
+          "terms": [
+            "Microservices",
+            "API Gateways",
+            "API Management",
+            "API Product Development",
+            "SDK Development",
+            "Framework Design",
+            "Backend Service Architecture"
+          ]
+        },
+        {
+          "name": "Resilience",
+          "terms": [
+            "Rate Limiting",
+            "Exponential Backoff",
+            "Circuit Breakers",
+            "Idempotency",
+            "Connection Pooling"
+          ]
+        },
+        {
+          "name": "Background processing",
+          "terms": [
+            "Celery",
+            "Task Queues",
+            "Background Jobs"
+          ]
+        },
+        {
+          "name": "Persistence",
+          "terms": [
+            "SQLAlchemy",
+            "Database Migrations",
+            "Transaction Management"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K16",
+      "name": "Databases and Storage",
+      "groups": [
+        {
+          "name": "Relational databases",
+          "terms": [
+            "PostgreSQL",
+            "MySQL",
+            "SQL Server"
+          ]
+        },
+        {
+          "name": "NoSQL databases",
+          "terms": [
+            "MongoDB",
+            "DynamoDB",
+            "Azure Cosmos DB"
+          ]
+        },
+        {
+          "name": "Caching",
+          "terms": [
+            "Redis",
+            "Application Caching",
+            "Semantic Caching",
+            "Cache Invalidation"
+          ]
+        },
+        {
+          "name": "Storage concepts",
+          "terms": [
+            "Object Storage",
+            "Data Partitioning",
+            "Index Design",
+            "Query Optimization",
+            "Database Transactions",
+            "Relational Database Design"
+          ]
+        },
+        {
+          "name": "Data platforms",
+          "terms": [
+            "Snowflake",
+            "BigQuery",
+            "Databricks"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K17",
+      "name": "Data Engineering and Data Quality",
+      "groups": [
+        {
+          "name": "Pipelines",
+          "terms": [
+            "ETL",
+            "ELT",
+            "Batch Processing",
+            "Stream Processing",
+            "Change Data Capture (CDC)",
+            "Data Ingestion",
+            "Cloud Data Pipelines"
+          ]
+        },
+        {
+          "name": "Architecture",
+          "terms": [
+            "Data Lakes",
+            "Data Warehouses",
+            "Lakehouse Architecture",
+            "Medallion Architecture",
+            "Large-Scale Data Infrastructure"
+          ]
+        },
+        {
+          "name": "Processing",
+          "terms": [
+            "Apache Spark",
+            "PySpark",
+            "Apache Kafka",
+            "Apache Flink"
+          ]
+        },
+        {
+          "name": "Orchestration and transformation",
+          "terms": [
+            "Apache Airflow",
+            "Dagster",
+            "Prefect",
+            "dbt"
+          ]
+        },
+        {
+          "name": "Formats",
+          "terms": [
+            "Parquet",
+            "Avro",
+            "JSON",
+            "Delta Lake",
+            "Apache Iceberg"
+          ]
+        },
+        {
+          "name": "Quality and governance",
+          "terms": [
+            "Data Validation",
+            "Schema Validation",
+            "Data Lineage",
+            "Data Contracts",
+            "Data Quality Monitoring",
+            "Great Expectations"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K18",
+      "name": "Cloud and Managed AI Services",
+      "groups": [
+        {
+          "name": "AWS",
+          "terms": [
+            "Amazon Bedrock",
+            "Bedrock Agents",
+            "Bedrock AgentCore",
+            "Amazon SageMaker",
+            "Amazon Q",
+            "Lambda",
+            "API Gateway",
+            "S3",
+            "EC2",
+            "ECS",
+            "EKS",
+            "ECR",
+            "SQS",
+            "SNS",
+            "Step Functions",
+            "CloudWatch"
+          ]
+        },
+        {
+          "name": "Azure",
+          "terms": [
+            "Azure OpenAI",
+            "Azure AI Foundry",
+            "Azure Machine Learning",
+            "Azure Functions",
+            "Azure Container Apps",
+            "Azure Kubernetes Service (AKS)",
+            "Azure Blob Storage",
+            "Azure API Management",
+            "Azure Monitor"
+          ]
+        },
+        {
+          "name": "Google Cloud Platform",
+          "terms": [
+            "Vertex AI",
+            "Model Garden",
+            "Google ADK",
+            "Agentspace",
+            "Cloud Run",
+            "Google Kubernetes Engine (GKE)",
+            "Cloud Storage",
+            "Pub/Sub",
+            "Dataflow"
+          ]
+        },
+        {
+          "name": "Other AI platforms",
+          "terms": [
+            "Snowflake Cortex AI",
+            "Databricks Mosaic AI"
+          ]
+        },
+        {
+          "name": "Model APIs",
+          "terms": [
+            "OpenAI API",
+            "OpenAI SDK",
+            "OpenAI Responses API",
+            "Anthropic / Claude API",
+            "Gemini API",
+            "Amazon Bedrock API"
+          ]
+        },
+        {
+          "name": "Cloud capabilities",
+          "terms": [
+            "Cloud Engineering",
+            "Cloud Integration",
+            "Cloud-Based Applications",
+            "Cloud and On-Premises Deployment"
+          ]
+        }
+      ],
+      "notes": [
+        "Use the service names relevant to the candidate’s work and target posting. Product branding can change."
+      ]
+    },
+    {
+      "id": "K19",
+      "name": "DevOps and Infrastructure",
+      "groups": [
+        {
+          "name": "Containers",
+          "terms": [
+            "Docker",
+            "Kubernetes",
+            "Helm"
+          ]
+        },
+        {
+          "name": "Infrastructure as code",
+          "terms": [
+            "Terraform",
+            "AWS CloudFormation",
+            "Pulumi"
+          ]
+        },
+        {
+          "name": "Delivery",
+          "terms": [
+            "CI/CD",
+            "GitHub Actions",
+            "GitLab CI/CD",
+            "Jenkins",
+            "Argo CD",
+            "GitOps"
+          ]
+        },
+        {
+          "name": "Infrastructure",
+          "terms": [
+            "Serverless Computing",
+            "Networking",
+            "Virtual Private Clouds",
+            "Private Endpoints"
+          ]
+        },
+        {
+          "name": "Testing",
+          "terms": [
+            "pytest",
+            "Mocking",
+            "Contract Testing",
+            "End-to-End Testing",
+            "Load Testing",
+            "Locust",
+            "k6"
+          ]
+        },
+        {
+          "name": "Security in delivery",
+          "terms": [
+            "DevSecOps",
+            "Dependency Scanning",
+            "Container Scanning",
+            "Secrets Scanning"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K20",
+      "name": "Architecture and Enterprise Integration",
+      "groups": [
+        {
+          "name": "System architecture",
+          "terms": [
+            "Distributed Systems",
+            "Cloud-Native Architecture",
+            "Event-Driven Architecture",
+            "AI Platform Architecture",
+            "Multi-Tenant SaaS",
+            "Large-Scale Backend Services"
+          ]
+        },
+        {
+          "name": "Integration",
+          "terms": [
+            "Enterprise Integration Patterns",
+            "API-Based Integration",
+            "Asynchronous Messaging",
+            "Message Queues",
+            "Shared Enterprise Services",
+            "Client-System Integration",
+            "Security-Constrained System Integration"
+          ]
+        },
+        {
+          "name": "Workflow design",
+          "terms": [
+            "Workflow Automation",
+            "Workflow Orchestration",
+            "Workflow Choreography",
+            "Temporal",
+            "Durable Workflows"
+          ]
+        },
+        {
+          "name": "Reliability",
+          "terms": [
+            "Fault Tolerance",
+            "High Availability",
+            "Backpressure",
+            "Dead-Letter Queues",
+            "Disaster Recovery"
+          ]
+        },
+        {
+          "name": "Design practices",
+          "terms": [
+            "Domain-Driven Design",
+            "Service Design",
+            "Architecture Decision Records",
+            "Legacy System Modernization",
+            "Production Systems Operations"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K21",
+      "name": "AI Security and Governance",
+      "groups": [
+        {
+          "name": "LLM security",
+          "terms": [
+            "Prompt Injection Mitigation",
+            "Jailbreak Testing",
+            "Sensitive Information Disclosure Prevention",
+            "Output Validation",
+            "Tool-Use Security",
+            "Excessive Agency Mitigation"
+          ]
+        },
+        {
+          "name": "Agent controls",
+          "terms": [
+            "Sandboxed Code Execution",
+            "Least-Privilege Tool Access",
+            "Tool Allowlists",
+            "Human Authorization"
+          ]
+        },
+        {
+          "name": "Identity",
+          "terms": [
+            "OAuth 2.0",
+            "OpenID Connect (OIDC)",
+            "JWT",
+            "Role-Based Access Control (RBAC)",
+            "Attribute-Based Access Control (ABAC)"
+          ]
+        },
+        {
+          "name": "Data protection",
+          "terms": [
+            "PII Detection and Redaction",
+            "Encryption",
+            "Secrets Management",
+            "Tenant Isolation",
+            "Audit Logging",
+            "Data Retention Controls"
+          ]
+        },
+        {
+          "name": "Cloud security",
+          "terms": [
+            "AWS IAM",
+            "AWS KMS",
+            "AWS Secrets Manager",
+            "Azure Key Vault"
+          ]
+        },
+        {
+          "name": "Governance",
+          "terms": [
+            "Responsible AI",
+            "AI Risk Assessment",
+            "Explainability",
+            "Bias Evaluation",
+            "Model Cards",
+            "Data Provenance",
+            "Secure SDLC"
+          ]
+        },
+        {
+          "name": "Relevant compliance experience",
+          "terms": [
+            "HIPAA",
+            "SOC 2",
+            "GDPR"
+          ]
+        }
+      ],
+      "notes": []
+    },
+    {
+      "id": "K22",
+      "name": "Specialized Application Areas",
+      "groups": [
+        {
+          "name": "Document AI",
+          "terms": [
+            "Intelligent Document Processing",
+            "Document Classification",
+            "Information Extraction",
+            "Named Entity Recognition",
+            "Table Extraction",
+            "Document Understanding"
+          ]
+        },
+        {
+          "name": "Voice AI",
+          "terms": [
+            "Automatic Speech Recognition (ASR)",
+            "Speech-to-Text",
+            "Text-to-Speech (TTS)",
+            "Voice Activity Detection",
+            "Speaker Diarization",
+            "Real-Time Voice Agents"
+          ]
+        },
+        {
+          "name": "Computer vision",
+          "terms": [
+            "Image Classification",
+            "Object Detection",
+            "Image Segmentation",
+            "Vision-Language Models",
+            "OpenCV"
+          ]
+        },
+        {
+          "name": "Search and recommendations",
+          "terms": [
+            "Learning to Rank",
+            "Recommendation Engines",
+            "Personalization",
+            "Semantic Matching"
+          ]
+        },
+        {
+          "name": "AI application interfaces",
+          "terms": [
+            "React",
+            "Next.js",
+            "Streamlit",
+            "Gradio",
+            "Conversational Interfaces",
+            "Web Application Development"
+          ]
+        },
+        {
+          "name": "Enterprise automation",
+          "terms": [
+            "UiPath",
+            "Microsoft Copilot Studio",
+            "Power Platform AI Builder",
+            "Microsoft 365 Copilot"
+          ]
+        },
+        {
+          "name": "AI-assisted development",
+          "terms": [
+            "Claude Code",
+            "Codex",
+            "Cursor",
+            "Gemini CLI",
+            "ChatGPT Tools",
+            "Coding Agent Supervision",
+            "AI-Assisted Code Review"
+          ]
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "role_profiles": {
+    "GENAI_LLM": [
+      "K01",
+      "K04",
+      "K07",
+      "K08",
+      "K10",
+      "K15",
+      "K18",
+      "K19"
+    ],
+    "AGENTIC": [
+      "K04",
+      "K05",
+      "K06",
+      "K07",
+      "K10",
+      "K11",
+      "K15",
+      "K21"
+    ],
+    "ML": [
+      "K01",
+      "K02",
+      "K03",
+      "K09",
+      "K10",
+      "K12",
+      "K17"
+    ],
+    "PLATFORM_INFERENCE": [
+      "K11",
+      "K12",
+      "K13",
+      "K14",
+      "K15",
+      "K18",
+      "K19",
+      "K20"
+    ],
+    "RESEARCH_TRAINING": [
+      "K02",
+      "K03",
+      "K09",
+      "K10",
+      "K14"
+    ]
+  },
+  "selection_rule": "Use relevant categories plus candidate-evidenced supporting categories. Always pass the full JD and full candidate inventory. Category selection never proves a skill or suppresses a JD term."
+}

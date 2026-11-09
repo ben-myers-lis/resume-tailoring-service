@@ -1,0 +1,81 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "title-only-02_strong_llm",
+  "run_type": "NEW_JD",
+  "as_of_date": "2026-11-08",
+  "candidate": {
+    "candidate_id": "cand-02_strong_llm",
+    "profile_version": "title-only-1",
+    "name": "Jordan Okafor",
+    "headline": null,
+    "contacts": [
+      {
+        "kind": "EMAIL",
+        "value": "jordan.okafor@example.com"
+      },
+      {
+        "kind": "LINKEDIN",
+        "value": "linkedin.com/in/jordan-okafor-example"
+      }
+    ],
+    "employment": [
+      {
+        "role_id": "R1",
+        "employer": "Pinecrest Labs",
+        "official_title": "AI Engineer",
+        "start_date": "2024-02",
+        "end_date": null,
+        "is_current": true,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R2",
+        "employer": "Pinecrest Labs",
+        "official_title": "Software Engineer II",
+        "start_date": "2021-07",
+        "end_date": "2024-01",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R3",
+        "employer": "Ridgeway Digital",
+        "official_title": "Software Engineer",
+        "start_date": "2019-08",
+        "end_date": "2021-06",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      }
+    ],
+    "education": [
+      "B.S. Computer Engineering, Tech Institute, 2019"
+    ],
+    "certifications": []
+  },
+  "sources": [],
+  "jd": {
+    "jd_id": "jd-llm_app",
+    "company": "Brightpath Software",
+    "role": "LLM Application Engineer",
+    "text": "Build LLM-powered product features. Required: 3+ years of software engineering; Python or TypeScript; experience building applications on LLM APIs; retrieval-augmented generation (RAG); prompt design and evaluation; REST APIs. Preferred: vector databases (pgvector, Pinecone), agent frameworks, observability for LLM systems. Responsibilities: ship features end to end, design evaluation suites, work with product and design."
+  },
+  "external_context": [],
+  "options": {
+    "mode": "APPLICATION",
+    "metric_policy": "EVIDENCED_ONLY",
+    "hypothetical_metrics_authorized": false,
+    "illustrative_scenario": null,
+    "output_mode": "RESUME_AND_REPORT",
+    "formats": [
+      "MARKDOWN"
+    ],
+    "max_repair_rounds": 1,
+    "keyword_category_ids": [],
+    "bullet_ceilings": [],
+    "max_pages": 2
+  },
+  "revision": null
+}

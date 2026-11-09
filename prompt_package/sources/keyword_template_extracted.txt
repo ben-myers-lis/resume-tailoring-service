@@ -1,0 +1,336 @@
+<PARSED TEXT FOR PAGE: 1 / 7>
+AI ENGINEERING | RESUME KEYWORD REFERENCE
+
+
+
+AI Engineering Resume Keyword Template
+Expanded technical keyword bank for resume development
+Use this reference to select relevant skills for AI engineering resumes and place technical details naturally in
+experience bullets. It combines the supplied job-posting keywords with additional coverage of retrieval, evaluation,
+agent reliability, data quality, security, and production infrastructure.
+Selection rule: There is no universal mandatory keyword list. Match each target job description, include skills
+supported by actual experience, and demonstrate major requirements through specific work. This is a master
+reference, not a skills section to paste in full.
+
+1 Programming Languages and Software Engineering
+Primary languages: Python, SQL.
+Additional languages and platforms: TypeScript, JavaScript, Java, Go, C#, .NET, Scala, Kotlin, C++, Bash.
+Engineering fundamentals: Data Structures and Algorithms, Object-Oriented Programming, Design Patterns, Type
+Hints, Asynchronous Programming, Concurrency, Multiprocessing, Memory Management, Performance Profiling.
+Development practices: Git, GitHub, Linux, Code Reviews, Unit Testing, Integration Testing, Automated Testing,
+Dependency Management, Software Development Lifecycle.
+
+2 AI and Machine Learning Foundations
+Core disciplines: Artificial Intelligence, Machine Learning Engineering, Applied Machine Learning, Classical Machine
+Learning, Statistical Machine Learning, Statistical Modeling, Deep Learning, Natural Language Processing (NLP),
+Computer Vision, Generative AI, Conversational AI, Multimodal AI.
+Methods: Supervised Learning, Unsupervised Learning, Reinforcement Learning, Classification, Regression, Clustering,
+Anomaly Detection, Recommendation Systems, Time-Series Forecasting.
+Model development: Feature Engineering, Feature Selection, Cross-Validation, Hyperparameter Optimization,
+Regularization, Class Imbalance Handling, Data Leakage Prevention, Error Analysis.
+Statistical methods: Probability, Hypothesis Testing, Experiment Design, A/B Testing, Numerical Optimization.
+Algorithms: Linear and Logistic Regression, Decision Trees, Random Forests, Gradient Boosting, XGBoost, LightGBM,
+CatBoost.
+
+3 ML Frameworks and Scientific Computing
+Frameworks and libraries: PyTorch, TensorFlow, Keras, Scikit-learn, Hugging Face Transformers, Hugging Face
+Datasets, Hugging Face Tokenizers, Sentence Transformers, NumPy, Pandas, SciPy, Polars, JAX.
+Selection note: These are alternatives and complementary tools. Select the libraries supported by the candidate’s
+experience.
+
+4 LLM Engineering and Context Management
+Model concepts: Large Language Models (LLMs), Foundation Models, Transformer Architecture, Attention
+Mechanisms, Tokenization, Open-Weight Models.
+Application development: LLM Engineering, LLM Application Development, Model Selection, Model Routing, Model
+Fallbacks, Multi-Model Integration.
+
+
+
+                                                                                                                  Page 1
+<PARSED TEXT FOR PAGE: 2 / 7>
+AI ENGINEERING | RESUME KEYWORD REFERENCE
+Prompting: Prompt Engineering, System Prompts, Prompt Templates, Few-Shot Prompting, Structured Prompting,
+Prompt Versioning, Prompt Optimization.
+Context handling: Context Engineering, Context Construction, Context Window Management, Conversation History
+Management, Context Compression, Token Budgeting.
+Model interaction: Function Calling / Tool Calling, Structured Outputs, JSON Schema Validation, Streaming
+Responses, Output Parsing.
+
+5 Agentic AI and Multi Agent Systems
+Architecture: AI Agent Development, Production Agent Systems, Agentic Workflows, Agent Architecture, Agent
+Infrastructure, Multi-Agent Systems.
+Execution patterns: ReAct, Planning and Execution, Task Decomposition, Tool Selection, Tool Execution, Agent
+Routing, Agent Handoffs, Supervisor–Worker Patterns, Multi-Agent Coordination, Agent Coordination Protocols.
+State and memory: Agent State Management, Workflow State Management, Short-Term Memory, Long-Term
+Memory, Session Management, Persistent Memory, Checkpointing.
+Reliability: Durable Execution, Workflow Recovery, Retries, Timeouts, Failure Handling, Loop Termination, Execution
+Budgets.
+Human oversight: Human-in-the-Loop Workflows, Approval Gates, Human Escalation, Tool Permission Controls.
+
+6 Agent Frameworks and Protocols
+Frameworks: LangChain, LangGraph, LlamaIndex, CrewAI, AutoGen, PydanticAI, Strands Agents, Semantic Kernel,
+Haystack.
+Agent SDKs: OpenAI Agents SDK, Claude Agent SDK, Google Agent Development Kit (ADK).
+Interoperability: Model Context Protocol (MCP), MCP Servers, MCP Clients, FastMCP, Agent-to-Agent (A2A) Protocol.
+Integration capabilities: Custom Tool Development, Tool Schemas, Agent Service Integration, Custom Agent
+Orchestration.
+
+7 Retrieval Augmented Generation and Document Processing
+RAG architecture: Retrieval-Augmented Generation (RAG), Agentic RAG, GraphRAG, Multimodal RAG, Retrieval
+Pipelines, Grounded Generation.
+Ingestion: Document Ingestion, Document Parsing, PDF Processing, Optical Character Recognition (OCR), Layout-
+Aware Extraction, Metadata Extraction.
+Chunking: Document Chunking, Recursive Chunking, Semantic Chunking, Chunk Overlap, Parent–Child Retrieval.
+Retrieval: Information Retrieval, Dense Retrieval, Sparse Retrieval, Semantic Search, Vector Search, Hybrid Search,
+BM25, Metadata Filtering.
+Retrieval improvement: Query Rewriting, Query Expansion, Multi-Query Retrieval, Reranking, Cross-Encoders,
+Reciprocal Rank Fusion (RRF), Contextual Compression.
+Production controls: Incremental Indexing, Index Refresh, Data Freshness, Access-Controlled Retrieval, Source
+Attribution, Citation Generation.
+
+8 Embeddings and Search Infrastructure
+Embeddings: Text Embeddings, Multimodal Embeddings, Embedding Pipelines, Embedding Model Selection,
+Embedding Evaluation.
+
+
+                                                                                                                Page 2
+<PARSED TEXT FOR PAGE: 3 / 7>
+AI ENGINEERING | RESUME KEYWORD REFERENCE
+Similarity and indexing: Cosine Similarity, Dot Product Similarity, Approximate Nearest Neighbor (ANN) Search,
+HNSW, Vector Indexing.
+Vector stores and databases: Pinecone, Weaviate, Qdrant, Milvus, ChromaDB, pgvector.
+Search technologies: FAISS, OpenSearch, Elasticsearch, Azure AI Search.
+Graph technologies: Neo4j, Knowledge Graphs, Graph Modeling, Cypher.
+Classification note: FAISS is a similarity-search library, not a standalone database.
+
+9 Model Training and Fine Tuning
+Training approaches: Model Training, Foundation Model Pretraining, Continued Pretraining, Supervised Fine-Tuning
+(SFT), Instruction Tuning, LLM Fine-Tuning.
+Efficient adaptation: Parameter-Efficient Fine-Tuning (PEFT), LoRA, QLoRA, Adapter Tuning.
+Preference optimization: Reinforcement Learning from Human Feedback (RLHF), Direct Preference Optimization
+(DPO), Reward Modeling.
+Training data: Dataset Curation, Data Annotation, Synthetic Data Generation, Data Deduplication, Training Data
+Quality.
+Optimization: Knowledge Distillation, Quantization, Pruning, Mixed-Precision Training, Gradient Accumulation,
+Gradient Checkpointing.
+Tools: Hugging Face PEFT, TRL, Accelerate, bitsandbytes, Optuna.
+
+10 AI Evaluation and Quality Assurance
+Evaluation design: Model Evaluation, LLM Evaluation, Agent Evaluation, Workflow Evaluation, Evaluation-Driven
+Development, Offline Evaluation, Online Evaluation, Benchmarking, Regression Evaluation.
+Datasets and grading: Golden Test Sets, Evaluation Dataset Curation, Human Evaluation, LLM-as-a-Judge, Rubric-
+Based Evaluation, Adversarial Testing.
+RAG quality: Faithfulness, Groundedness, Answer Relevance, Context Precision, Context Recall, Citation Accuracy.
+Retrieval metrics: Precision@K, Recall@K, Mean Reciprocal Rank (MRR), Normalized Discounted Cumulative Gain
+(NDCG).
+Agent metrics: Task Success Rate, Tool Selection Accuracy, Tool Argument Accuracy, Trajectory Evaluation, Workflow
+Completion Rate.
+ML metrics: Precision, Recall, F1 Score, ROC-AUC, PR-AUC, MAE, RMSE.
+Tools: Ragas, DeepEval, Promptfoo, OpenAI Evals.
+
+11 Observability and Reliability
+Observability: LLM Observability, Agent Tracing, Distributed Tracing, Structured Logging, Metrics, Dashboards,
+Alerting, Observability for Non-Deterministic Systems.
+Diagnostics: Prompt and Response Logging, Tool-Call Tracing, Failure Analysis, Root Cause Analysis, Incident
+Response.
+Performance: Latency Monitoring, p95/p99 Latency, Time to First Token (TTFT), Tokens per Second, Throughput,
+Error Rates.
+Cost: Token Usage Tracking, Cost per Request, Cost per Successful Task, Inference Cost Optimization.
+ML monitoring: Data Drift, Concept Drift, Model Performance Monitoring.
+Tools: LangSmith, Langfuse, Arize Phoenix, OpenTelemetry, Prometheus, Grafana, Datadog, Evidently.
+                                                                                                                 Page 3
+<PARSED TEXT FOR PAGE: 4 / 7>
+AI ENGINEERING | RESUME KEYWORD REFERENCE
+
+12 MLOps and LLMOps
+Lifecycle management: MLOps, LLMOps, Experiment Tracking, Model Registry, Model Versioning, Dataset Versioning,
+Artifact Management, Reproducible Training.
+Pipelines: Training Pipelines, Evaluation Pipelines, Deployment Pipelines, Continuous Training, Automated Retraining.
+Release practices: Model Promotion, Canary Deployment, Blue–Green Deployment, Shadow Deployment, Rollback.
+Feature management: Feature Stores, Offline and Online Features, Training–Serving Consistency.
+Tools: MLflow, Weights & Biases, DVC, Kubeflow, Metaflow, Feast.
+
+13 Inference and Model Serving
+Serving patterns: Batch Inference, Online Inference, Real-Time Inference, Streaming Inference, Low-Latency Serving.
+Optimization: Dynamic Batching, Continuous Batching, KV Cache Management, Prefix Caching, Speculative Decoding,
+Model Quantization.
+Scaling: GPU Utilization Optimization, Autoscaling, Load Balancing, Concurrency Management, Cold-Start
+Optimization.
+Tools: vLLM, SGLang, TensorRT, TensorRT-LLM, NVIDIA Triton Inference Server, ONNX, ONNX Runtime, KServe,
+BentoML, Ray Serve.
+
+14 Distributed Training and GPU Computing
+Parallelism: Distributed Data Parallel (DDP), Fully Sharded Data Parallel (FSDP), Tensor Parallelism, Pipeline
+Parallelism, Model Parallelism.
+Infrastructure: GPU Clusters, Multi-Node Training, Distributed Checkpointing, Fault Recovery.
+Acceleration: CUDA, ROCm, NCCL, GPU Memory Optimization.
+Frameworks: DeepSpeed, Megatron-LM, PyTorch Distributed, Ray Train.
+Profiling: PyTorch Profiler, NVIDIA Nsight, Perfetto, GPU Trace Analysis, Cluster Failure Diagnosis.
+
+15 Backend Development and API Engineering
+Frameworks: FastAPI, Flask, Django, Pydantic.
+Interfaces: REST APIs, GraphQL, gRPC, WebSockets, Server-Sent Events (SSE), Webhooks.
+Contracts: OpenAPI, JSON Schema, Protocol Buffers (Protobuf), API Versioning, Request Validation.
+Services: Microservices, API Gateways, API Management, API Product Development, SDK Development, Framework
+Design, Backend Service Architecture.
+Resilience: Rate Limiting, Exponential Backoff, Circuit Breakers, Idempotency, Connection Pooling.
+Background processing: Celery, Task Queues, Background Jobs.
+Persistence: SQLAlchemy, Database Migrations, Transaction Management.
+
+16 Databases and Storage
+Relational databases: PostgreSQL, MySQL, SQL Server.
+NoSQL databases: MongoDB, DynamoDB, Azure Cosmos DB.
+Caching: Redis, Application Caching, Semantic Caching, Cache Invalidation.
+
+
+                                                                                                                 Page 4
+<PARSED TEXT FOR PAGE: 5 / 7>
+AI ENGINEERING | RESUME KEYWORD REFERENCE
+Storage concepts: Object Storage, Data Partitioning, Index Design, Query Optimization, Database Transactions,
+Relational Database Design.
+Data platforms: Snowflake, BigQuery, Databricks.
+
+17 Data Engineering and Data Quality
+Pipelines: ETL, ELT, Batch Processing, Stream Processing, Change Data Capture (CDC), Data Ingestion, Cloud Data
+Pipelines.
+Architecture: Data Lakes, Data Warehouses, Lakehouse Architecture, Medallion Architecture, Large-Scale Data
+Infrastructure.
+Processing: Apache Spark, PySpark, Apache Kafka, Apache Flink.
+Orchestration and transformation: Apache Airflow, Dagster, Prefect, dbt.
+Formats: Parquet, Avro, JSON, Delta Lake, Apache Iceberg.
+Quality and governance: Data Validation, Schema Validation, Data Lineage, Data Contracts, Data Quality Monitoring,
+Great Expectations.
+
+18 Cloud and Managed AI Services
+AWS: Amazon Bedrock, Bedrock Agents, Bedrock AgentCore, Amazon SageMaker, Amazon Q, Lambda, API Gateway,
+S3, EC2, ECS, EKS, ECR, SQS, SNS, Step Functions, CloudWatch.
+Azure: Azure OpenAI, Azure AI Foundry, Azure Machine Learning, Azure Functions, Azure Container Apps, Azure
+Kubernetes Service (AKS), Azure Blob Storage, Azure API Management, Azure Monitor.
+Google Cloud Platform: Vertex AI, Model Garden, Google ADK, Agentspace, Cloud Run, Google Kubernetes Engine
+(GKE), Cloud Storage, Pub/Sub, Dataflow.
+Other AI platforms: Snowflake Cortex AI, Databricks Mosaic AI.
+Model APIs: OpenAI API, OpenAI SDK, OpenAI Responses API, Anthropic / Claude API, Gemini API, Amazon Bedrock
+API.
+Cloud capabilities: Cloud Engineering, Cloud Integration, Cloud-Based Applications, Cloud and On-Premises
+Deployment.
+Naming note: Use the service names relevant to the candidate’s work and target posting. Product branding can
+change.
+
+19 DevOps and Infrastructure
+Containers: Docker, Kubernetes, Helm.
+Infrastructure as code: Terraform, AWS CloudFormation, Pulumi.
+Delivery: CI/CD, GitHub Actions, GitLab CI/CD, Jenkins, Argo CD, GitOps.
+Infrastructure: Serverless Computing, Networking, Virtual Private Clouds, Private Endpoints.
+Testing: pytest, Mocking, Contract Testing, End-to-End Testing, Load Testing, Locust, k6.
+Security in delivery: DevSecOps, Dependency Scanning, Container Scanning, Secrets Scanning.
+
+20 Architecture and Enterprise Integration
+System architecture: Distributed Systems, Cloud-Native Architecture, Event-Driven Architecture, AI Platform
+Architecture, Multi-Tenant SaaS, Large-Scale Backend Services.
+
+
+                                                                                                                Page 5
+<PARSED TEXT FOR PAGE: 6 / 7>
+AI ENGINEERING | RESUME KEYWORD REFERENCE
+Integration: Enterprise Integration Patterns, API-Based Integration, Asynchronous Messaging, Message Queues,
+Shared Enterprise Services, Client-System Integration, Security-Constrained System Integration.
+Workflow design: Workflow Automation, Workflow Orchestration, Workflow Choreography, Temporal, Durable
+Workflows.
+Reliability: Fault Tolerance, High Availability, Backpressure, Dead-Letter Queues, Disaster Recovery.
+Design practices: Domain-Driven Design, Service Design, Architecture Decision Records, Legacy System
+Modernization, Production Systems Operations.
+
+21 AI Security and Governance
+LLM security: Prompt Injection Mitigation, Jailbreak Testing, Sensitive Information Disclosure Prevention, Output
+Validation, Tool-Use Security, Excessive Agency Mitigation.
+Agent controls: Sandboxed Code Execution, Least-Privilege Tool Access, Tool Allowlists, Human Authorization.
+Identity: OAuth 2.0, OpenID Connect (OIDC), JWT, Role-Based Access Control (RBAC), Attribute-Based Access Control
+(ABAC).
+Data protection: PII Detection and Redaction, Encryption, Secrets Management, Tenant Isolation, Audit Logging, Data
+Retention Controls.
+Cloud security: AWS IAM, AWS KMS, AWS Secrets Manager, Azure Key Vault.
+Governance: Responsible AI, AI Risk Assessment, Explainability, Bias Evaluation, Model Cards, Data Provenance,
+Secure SDLC.
+Relevant compliance experience: HIPAA, SOC 2, GDPR.
+
+22 Specialized Application Areas
+Document AI: Intelligent Document Processing, Document Classification, Information Extraction, Named Entity
+Recognition, Table Extraction, Document Understanding.
+Voice AI: Automatic Speech Recognition (ASR), Speech-to-Text, Text-to-Speech (TTS), Voice Activity Detection,
+Speaker Diarization, Real-Time Voice Agents.
+Computer vision: Image Classification, Object Detection, Image Segmentation, Vision-Language Models, OpenCV.
+Search and recommendations: Learning to Rank, Recommendation Engines, Personalization, Semantic Matching.
+AI application interfaces: React, Next.js, Streamlit, Gradio, Conversational Interfaces, Web Application Development.
+Enterprise automation: UiPath, Microsoft Copilot Studio, Power Platform AI Builder, Microsoft 365 Copilot.
+AI-assisted development: Claude Code, Codex, Cursor, Gemini CLI, ChatGPT Tools, Coding Agent Supervision, AI-
+Assisted Code Review.
+
+Applying the Template to a Resume
+Generative AI or LLM Engineer: Emphasize Python, LLM integration, RAG, retrieval quality, evaluation, backend
+services, and deployment.
+Agentic AI Engineer: Emphasize tool calling, orchestration, state and memory, relevant protocols, agent evaluation,
+recovery, and permissions.
+Machine Learning Engineer: Emphasize data preparation, modeling, training, validation, feature pipelines,
+deployment, and monitoring.
+AI Platform or Inference Engineer: Emphasize distributed systems, Kubernetes, model serving, GPU performance,
+observability, reliability, and cost.
+
+                                                                                                                 Page 6
+<PARSED TEXT FOR PAGE: 7 / 7>
+AI ENGINEERING | RESUME KEYWORD REFERENCE
+Research or Training Engineer: Emphasize PyTorch, experiments, training methods, fine-tuning, distributed training,
+and GPU debugging.
+
+Job Description Coverage Check
+1.   Extract every explicitly required technical skill from the target posting.
+2.   Match each requirement to evidence in employment or project experience.
+3.   Include the exact technology name and acronym where helpful.
+4.   Demonstrate major requirements in experience bullets, not only the skills section.
+5.   Identify genuine gaps rather than adding unsupported claims.
+
+Experience Bullet Structure
+Action + system or problem + relevant technologies + verified result. Use measured outcomes only when supported
+by evidence.
+Example, if supported by experience: Built a document retrieval service using Python, LangChain, and pgvector,
+combining semantic search with metadata filtering to improve the relevance of retrieved content.
+
+Additional Resume Context
+Keep domain experience separate from technical skills: Financial Services, Payments and Fintech, Insurance,
+Healthcare, Government Technology, Fraud Detection, Insurance Claims Processing, and Case Management Software.
+Include mentoring, stakeholder communication, collaboration, and product responsibilities where supported by
+experience.
+
+Selected Technical References
+These official references support the added technical depth. They document capabilities, not universal hiring
+requirements.
+LangGraph checkpointing
+https://reference.langchain.com/python/langgraph.checkpoint
+
+Sentence Transformers retrieval and reranking
+https://www.sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html
+
+Hugging Face PEFT integration
+https://huggingface.co/docs/trl/peft_integration
+
+OpenAI agent evaluation
+https://developers.openai.com/api/docs/guides/agent-evals
+
+Ragas context precision
+https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/context_precision/
+
+Ragas faithfulness
+https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/faithfulness/
+
+vLLM prefix caching
+https://docs.vllm.ai/en/stable/design/prefix_caching/
+
+PyTorch FSDP
+https://docs.pytorch.org/docs/main/distributed/fsdp.fully_shard.html
+
+OWASP generative AI security
+https://owasp.org/projects/top-10-for-large-language-model-applications
+
+
+
+
+                                                                                                                 Page 7

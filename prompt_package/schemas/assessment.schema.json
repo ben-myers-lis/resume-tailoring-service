@@ -1,0 +1,335 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "assessment",
+  "type": "object",
+  "properties": {
+    "package_version": {
+      "const": "1.0.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jd_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verdict": {
+      "enum": [
+        "READY",
+        "REVISE",
+        "INCOMPLETE_EVIDENCE",
+        "ILLUSTRATIVE",
+        "REVIEW_NEEDED"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rule_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "severity": {
+            "enum": [
+              "BLOCKER",
+              "MAJOR",
+              "MINOR",
+              "GAP"
+            ]
+          },
+          "location": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "recommended_action": {
+            "type": "string"
+          },
+          "resolved": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "finding_id",
+          "rule_id",
+          "severity",
+          "location",
+          "issue",
+          "evidence",
+          "recommended_action",
+          "resolved"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "bullet_audit": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "bullet_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "enum": [
+              "KEEP",
+              "TIGHTEN",
+              "CLARIFY",
+              "CORRECT",
+              "REMOVE_OR_CONFIRM"
+            ]
+          },
+          "evidence_status": {
+            "enum": [
+              "SUPPORTED",
+              "TRANSFERABLE",
+              "ILLUSTRATIVE",
+              "UNSUPPORTED",
+              "MIXED"
+            ]
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "reason": {
+            "type": "string"
+          },
+          "correction_or_question": {
+            "type": "string"
+          },
+          "disposition": {
+            "enum": [
+              "RETAINED",
+              "REMOVED",
+              "MERGED"
+            ]
+          },
+          "target_bullet_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "bullet_id",
+          "action",
+          "evidence_status",
+          "fact_ids",
+          "reason",
+          "correction_or_question",
+          "disposition",
+          "target_bullet_ids"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "section_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "enum": [
+              "IDENTITY_HISTORY",
+              "SUMMARY",
+              "SKILLS",
+              "METRICS",
+              "BUSINESS_CONTEXT",
+              "TECHNICAL_COHERENCE",
+              "JD_COVERAGE",
+              "READABILITY",
+              "LAYOUT"
+            ]
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "ISSUE",
+              "UNVERIFIED",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "section",
+          "status",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "requirement_coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "SUPPORTED",
+              "TRANSFERABLE",
+              "MISSING",
+              "ILLUSTRATIVE"
+            ]
+          },
+          "extent": {
+            "enum": [
+              "FULL",
+              "PARTIAL",
+              "NONE"
+            ]
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "bullet_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "placement": {
+            "enum": [
+              "EXPERIENCE",
+              "SKILLS_ONLY",
+              "SUMMARY",
+              "MULTIPLE",
+              "OMITTED"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requirement_id",
+          "status",
+          "extent",
+          "fact_ids",
+          "bullet_ids",
+          "placement",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "term_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "INCLUDED",
+              "ALTERNATIVE_COVERED",
+              "GAP"
+            ]
+          },
+          "claim_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "term",
+          "decision",
+          "claim_ids",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "confirmation_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5
+    },
+    "layout_status": {
+      "enum": [
+        "LAYOUT_UNVERIFIED",
+        "VERIFIED"
+      ]
+    },
+    "page_count": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "summary": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "package_version",
+    "run_id",
+    "candidate_id",
+    "jd_id",
+    "revision_id",
+    "verdict",
+    "findings",
+    "bullet_audit",
+    "section_checks",
+    "requirement_coverage",
+    "term_decisions",
+    "confirmation_items",
+    "layout_status",
+    "page_count",
+    "summary"
+  ],
+  "additionalProperties": false
+}

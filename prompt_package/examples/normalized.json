@@ -1,0 +1,181 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "synthetic-run-001",
+  "candidate_id": "synthetic-candidate-001",
+  "jd_id": "synthetic-jd-001",
+  "profile_version": "fixture-1",
+  "facts": [
+    {
+      "fact_id": "F1",
+      "role_id": "R1",
+      "fact_type": "PROJECT",
+      "statement": "I built an internal reporting service in Python with FastAPI REST APIs, PostgreSQL storage, Pydantic request validation, and pytest tests. Business analysts used the service in production. I explained API tradeoffs to the analysts.",
+      "source_id": "S1",
+      "quote": "I built an internal reporting service in Python with FastAPI REST APIs, PostgreSQL storage, Pydantic request validation, and pytest tests. Business analysts used the service in production. I explained API tradeoffs to the analysts.",
+      "status": "SUPPLIED"
+    },
+    {
+      "fact_id": "F2",
+      "role_id": "R1",
+      "fact_type": "OUTCOME",
+      "statement": "I reduced nightly report refresh from 12 to 8 minutes by replacing repeated SQL scans with a shared aggregation query, measured on the same report workload over five nightly runs. This was elapsed runtime, not staff labor savings.",
+      "source_id": "S1",
+      "quote": "I reduced nightly report refresh from 12 to 8 minutes by replacing repeated SQL scans with a shared aggregation query, measured on the same report workload over five nightly runs. This was elapsed runtime, not staff labor savings.",
+      "status": "SUPPLIED"
+    },
+    {
+      "fact_id": "F3",
+      "role_id": "R2",
+      "fact_type": "PROJECT",
+      "statement": "I maintained Java services and PostgreSQL queries for an internal inventory application. I added integration tests for order reconciliation.",
+      "source_id": "S2",
+      "quote": "I maintained Java services and PostgreSQL queries for an internal inventory application. I added integration tests for order reconciliation.",
+      "status": "SUPPLIED"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "Q1",
+      "text": "Python",
+      "quote": "Python",
+      "priority": "REQUIRED",
+      "technical_terms": [
+        "Python"
+      ],
+      "alternative_group": null,
+      "threshold": null
+    },
+    {
+      "requirement_id": "Q2",
+      "text": "REST APIs",
+      "quote": "REST APIs",
+      "priority": "REQUIRED",
+      "technical_terms": [
+        "REST APIs"
+      ],
+      "alternative_group": null,
+      "threshold": null
+    },
+    {
+      "requirement_id": "Q3",
+      "text": "PostgreSQL",
+      "quote": "PostgreSQL",
+      "priority": "REQUIRED",
+      "technical_terms": [
+        "PostgreSQL"
+      ],
+      "alternative_group": null,
+      "threshold": null
+    },
+    {
+      "requirement_id": "Q4",
+      "text": "production backend experience",
+      "quote": "production backend experience",
+      "priority": "REQUIRED",
+      "technical_terms": [],
+      "alternative_group": null,
+      "threshold": null
+    },
+    {
+      "requirement_id": "Q5",
+      "text": "Kubernetes or Cloud Run",
+      "quote": "Kubernetes or Cloud Run",
+      "priority": "PREFERRED",
+      "technical_terms": [
+        "Kubernetes",
+        "Cloud Run"
+      ],
+      "alternative_group": "ALT1",
+      "threshold": null
+    },
+    {
+      "requirement_id": "Q6",
+      "text": "automate reporting",
+      "quote": "automate reporting",
+      "priority": "RESPONSIBILITY",
+      "technical_terms": [],
+      "alternative_group": null,
+      "threshold": null
+    },
+    {
+      "requirement_id": "Q7",
+      "text": "explain technical tradeoffs to business users",
+      "quote": "explain technical tradeoffs to business users",
+      "priority": "RESPONSIBILITY",
+      "technical_terms": [],
+      "alternative_group": null,
+      "threshold": null
+    }
+  ],
+  "inventory": [
+    {
+      "term": "Python",
+      "role_id": "R1",
+      "fact_ids": [
+        "F1"
+      ],
+      "usage_status": "PRODUCTION"
+    },
+    {
+      "term": "FastAPI",
+      "role_id": "R1",
+      "fact_ids": [
+        "F1"
+      ],
+      "usage_status": "PRODUCTION"
+    },
+    {
+      "term": "REST APIs",
+      "role_id": "R1",
+      "fact_ids": [
+        "F1"
+      ],
+      "usage_status": "PRODUCTION"
+    },
+    {
+      "term": "PostgreSQL",
+      "role_id": "R1",
+      "fact_ids": [
+        "F1"
+      ],
+      "usage_status": "PRODUCTION"
+    },
+    {
+      "term": "Pydantic",
+      "role_id": "R1",
+      "fact_ids": [
+        "F1"
+      ],
+      "usage_status": "PRODUCTION"
+    },
+    {
+      "term": "pytest",
+      "role_id": "R1",
+      "fact_ids": [
+        "F1"
+      ],
+      "usage_status": "PRODUCTION"
+    },
+    {
+      "term": "SQL",
+      "role_id": "R1",
+      "fact_ids": [
+        "F2"
+      ],
+      "usage_status": "PRODUCTION"
+    },
+    {
+      "term": "Java",
+      "role_id": "R2",
+      "fact_ids": [
+        "F3"
+      ],
+      "usage_status": "UNKNOWN"
+    }
+  ],
+  "company_context": [],
+  "source_conflicts": [],
+  "evidence_gaps": [
+    "No supplied Kubernetes or Cloud Run experience. No contacts or education supplied."
+  ]
+}

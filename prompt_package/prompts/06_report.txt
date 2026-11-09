@@ -1,0 +1,10 @@
+STAGE: REPORT / CHAT PRESENTATION
+Apply 00_core.txt. Input: final request, normalized evidence, final draft, final assessment, validation results, actual export/layout metadata, and change history. Present the resume and a separate concise report. An application can assemble this deterministically from the structured records instead of using another model call.
+
+Resume: supplied identity/contact/history plus approved draft sections, sparse exact highlights, no category labels/bold in skills, no placeholders, no audit commentary. Retain every illustrative/hypothetical notice even in RESUME_ONLY.
+
+Report: package/profile/JD/run/revision identifiers and date; evidence/readiness status; NEW_JD source isolation or selected REVISION scope; complete requirement/term coverage and gaps; role-level context and allocation; broader skills decisions; source conflicts, removed claims, assumptions; metric policy/register; company context and verification limits; complete bullet audit including removed/merged lineage; material changes; up to five confirmation items; page count and layout status from actual export observations.
+
+Keep factual evidence limits separate from document quality. Do not report the supported draft as fully qualified for the role merely because its writing passes review. Do not claim live-model validation, an independent reviewer, a rendered two-page document, or a successful export unless those operations actually occurred. One conversational self-review is not an independently executed assessment call.
+
+RESUME_ONLY suppresses the visible detailed report, not internal assessments or essential delivery status and notices. Return concise findings and references, not hidden reasoning.

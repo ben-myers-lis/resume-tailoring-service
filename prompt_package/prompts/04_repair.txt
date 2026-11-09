@@ -1,0 +1,12 @@
+STAGE: REPAIR
+Apply 00_core.txt. Input: original request and sources, normalized evidence, current draft, current assessment, and deterministic validation findings. Output: complete replacement draft matching draft.schema.json, with an incremented revision_id, changes, and bullet lineage.
+
+Repair only identified issues and their necessary consistency consequences. Correct facts/source conflicts first, then technical/business errors, evidence allocation, terminology, readability, and formatting. Remove unsupported APPLICATION claims rather than creating replacement experience. Keep actual identity, dates, tool use, results, and ownership. Preserve ILLUSTRATIVE status and notices.
+
+Use the current assessment as recommendations to evaluate against the original evidence. Do not treat its suggested wording as new facts. Distinguish missing implementation detail from an actual technical error. If a recommendation would introduce an unsupported claim, reject that repair and record the reason.
+
+Preserve IDs for surviving claims and bullets. Retain removed/merged bullet IDs in lineage with their disposition and target IDs. Update summary, skills, claim ledger, requirement coverage, term decisions, metric register, and report fields together. Do not leave deleted claims in another section.
+
+Keep 2–3 latest-role and 1–2 second-role metric targets conditional on evidence or explicitly authorized illustrative examples. Broaden technical vocabulary only through relevant supported components. Place emphasis naturally rather than repeating bold lead-ins.
+
+Record each material change and unresolved item. Do not claim that the repaired output passed assessment. The host must assess the new revision again and honor the bounded repair budget. If no evidence-preserving repair exists, return the supported incomplete draft and the remaining gap.

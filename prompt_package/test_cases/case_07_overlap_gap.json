@@ -1,0 +1,91 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "title-only-07_overlap_gap",
+  "run_type": "NEW_JD",
+  "as_of_date": "2026-11-08",
+  "candidate": {
+    "candidate_id": "cand-07_overlap_gap",
+    "profile_version": "title-only-1",
+    "name": "Lena Kowalczyk",
+    "headline": null,
+    "contacts": [
+      {
+        "kind": "EMAIL",
+        "value": "lena.kowalczyk@example.com"
+      },
+      {
+        "kind": "LINKEDIN",
+        "value": "linkedin.com/in/lena-kowalczyk-example"
+      }
+    ],
+    "employment": [
+      {
+        "role_id": "R1",
+        "employer": "Freelance",
+        "official_title": "AI Consultant",
+        "start_date": "2024-06",
+        "end_date": null,
+        "is_current": true,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R2",
+        "employer": "Orchard Health",
+        "official_title": "Engineering Manager, ML",
+        "start_date": "2022-01",
+        "end_date": "2024-03",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R3",
+        "employer": "Orchard Health",
+        "official_title": "Senior Software Engineer",
+        "start_date": "2019-03",
+        "end_date": "2021-12",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R4",
+        "employer": "Kite Mobility",
+        "official_title": "Software Engineer (part-time)",
+        "start_date": "2018-09",
+        "end_date": "2019-06",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      }
+    ],
+    "education": [
+      "B.S. Computer Science, Northern University, 2018"
+    ],
+    "certifications": []
+  },
+  "sources": [],
+  "jd": {
+    "jd_id": "jd-ai_eng_lead",
+    "company": "Meridian Logistics",
+    "role": "Lead AI Engineer",
+    "text": "Required: 6+ years of software engineering, including 2+ years building AI or ML systems; experience leading engineers; Python; cloud deployment; LLM integration. Preferred: agentic workflows, logistics or supply-chain domain, stakeholder management. Responsibilities: lead a team of 4, own the AI roadmap for route optimization and operations tooling."
+  },
+  "external_context": [],
+  "options": {
+    "mode": "APPLICATION",
+    "metric_policy": "EVIDENCED_ONLY",
+    "hypothetical_metrics_authorized": false,
+    "illustrative_scenario": null,
+    "output_mode": "RESUME_AND_REPORT",
+    "formats": [
+      "MARKDOWN"
+    ],
+    "max_repair_rounds": 1,
+    "keyword_category_ids": [],
+    "bullet_ceilings": [],
+    "max_pages": 2
+  },
+  "revision": null
+}

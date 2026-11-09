@@ -1,0 +1,73 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "title-only-08_junior",
+  "run_type": "NEW_JD",
+  "as_of_date": "2026-11-08",
+  "candidate": {
+    "candidate_id": "cand-08_junior",
+    "profile_version": "title-only-1",
+    "name": "Ethan Brooks",
+    "headline": null,
+    "contacts": [
+      {
+        "kind": "EMAIL",
+        "value": "ethan.brooks@example.com"
+      },
+      {
+        "kind": "LINKEDIN",
+        "value": "linkedin.com/in/ethan-brooks-example"
+      }
+    ],
+    "employment": [
+      {
+        "role_id": "R1",
+        "employer": "Maplegrove Software",
+        "official_title": "Associate Software Engineer",
+        "start_date": "2025-07",
+        "end_date": null,
+        "is_current": true,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R2",
+        "employer": "Maplegrove Software",
+        "official_title": "Software Engineering Intern",
+        "start_date": "2024-06",
+        "end_date": "2024-08",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      }
+    ],
+    "education": [
+      "B.S. Computer Science, Valley State University, 2025"
+    ],
+    "certifications": [
+      "Google Cloud Certified - Associate Cloud Engineer"
+    ]
+  },
+  "sources": [],
+  "jd": {
+    "jd_id": "jd-junior_ai",
+    "company": "Sparrow Labs",
+    "role": "Junior AI Engineer",
+    "text": "Required: bachelor's degree in computer science or related field, or equivalent experience; Python; familiarity with machine learning fundamentals; eagerness to learn LLM application development. Preferred: internship experience, cloud certifications, Git. Responsibilities: build and test LLM features under senior guidance, write evaluation scripts, document work."
+  },
+  "external_context": [],
+  "options": {
+    "mode": "APPLICATION",
+    "metric_policy": "EVIDENCED_ONLY",
+    "hypothetical_metrics_authorized": false,
+    "illustrative_scenario": null,
+    "output_mode": "RESUME_AND_REPORT",
+    "formats": [
+      "MARKDOWN"
+    ],
+    "max_repair_rounds": 1,
+    "keyword_category_ids": [],
+    "bullet_ceilings": [],
+    "max_pages": 2
+  },
+  "revision": null
+}

@@ -1,0 +1,81 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "title-only-01_strong_mle",
+  "run_type": "NEW_JD",
+  "as_of_date": "2026-11-08",
+  "candidate": {
+    "candidate_id": "cand-01_strong_mle",
+    "profile_version": "title-only-1",
+    "name": "Avery Lindqvist",
+    "headline": null,
+    "contacts": [
+      {
+        "kind": "EMAIL",
+        "value": "avery.lindqvist@example.com"
+      },
+      {
+        "kind": "LINKEDIN",
+        "value": "linkedin.com/in/avery-lindqvist-example"
+      }
+    ],
+    "employment": [
+      {
+        "role_id": "R1",
+        "employer": "Quantia Analytics",
+        "official_title": "Senior Machine Learning Engineer",
+        "start_date": "2022-03",
+        "end_date": null,
+        "is_current": true,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R2",
+        "employer": "Quantia Analytics",
+        "official_title": "Machine Learning Engineer",
+        "start_date": "2020-01",
+        "end_date": "2022-02",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R3",
+        "employer": "Tidewater Systems",
+        "official_title": "Software Engineer",
+        "start_date": "2017-06",
+        "end_date": "2019-12",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      }
+    ],
+    "education": [
+      "M.S. Computer Science, State University, 2017"
+    ],
+    "certifications": []
+  },
+  "sources": [],
+  "jd": {
+    "jd_id": "jd-senior_mle",
+    "company": "Lumen Health AI",
+    "role": "Senior Machine Learning Engineer",
+    "text": "We are hiring a Senior Machine Learning Engineer to build and deploy production ML models for clinical risk prediction. Required: 5+ years of software or ML engineering experience; Python; PyTorch or TensorFlow; experience deploying models to production; SQL; cloud experience (AWS or GCP). Preferred: MLOps tooling (MLflow, Kubeflow), feature stores, healthcare data experience. Responsibilities: own model training and evaluation pipelines, partner with clinicians and product managers, mentor engineers."
+  },
+  "external_context": [],
+  "options": {
+    "mode": "APPLICATION",
+    "metric_policy": "EVIDENCED_ONLY",
+    "hypothetical_metrics_authorized": false,
+    "illustrative_scenario": null,
+    "output_mode": "RESUME_AND_REPORT",
+    "formats": [
+      "MARKDOWN"
+    ],
+    "max_repair_rounds": 1,
+    "keyword_category_ids": [],
+    "bullet_ceilings": [],
+    "max_pages": 2
+  },
+  "revision": null
+}

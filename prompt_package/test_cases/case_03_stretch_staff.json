@@ -1,0 +1,71 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "title-only-03_stretch_staff",
+  "run_type": "NEW_JD",
+  "as_of_date": "2026-11-08",
+  "candidate": {
+    "candidate_id": "cand-03_stretch_staff",
+    "profile_version": "title-only-1",
+    "name": "Priya Ramanathan",
+    "headline": null,
+    "contacts": [
+      {
+        "kind": "EMAIL",
+        "value": "priya.ramanathan@example.com"
+      },
+      {
+        "kind": "LINKEDIN",
+        "value": "linkedin.com/in/priya-ramanathan-example"
+      }
+    ],
+    "employment": [
+      {
+        "role_id": "R1",
+        "employer": "Coastal Retail Group",
+        "official_title": "Data Scientist",
+        "start_date": "2022-09",
+        "end_date": null,
+        "is_current": true,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R2",
+        "employer": "Coastal Retail Group",
+        "official_title": "Associate Data Scientist",
+        "start_date": "2021-06",
+        "end_date": "2022-08",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      }
+    ],
+    "education": [
+      "M.S. Statistics, Lakeside University, 2021"
+    ],
+    "certifications": []
+  },
+  "sources": [],
+  "jd": {
+    "jd_id": "jd-staff_mle",
+    "company": "Orbital Robotics",
+    "role": "Staff Machine Learning Engineer",
+    "text": "Required: 8+ years of ML engineering experience including technical leadership of ML teams; deep expertise in PyTorch; distributed training on GPU clusters; production model serving at scale. Preferred: computer vision, robotics, CUDA. Responsibilities: set technical direction for perception models, lead a team of 6 engineers, drive architecture reviews."
+  },
+  "external_context": [],
+  "options": {
+    "mode": "APPLICATION",
+    "metric_policy": "EVIDENCED_ONLY",
+    "hypothetical_metrics_authorized": false,
+    "illustrative_scenario": null,
+    "output_mode": "RESUME_AND_REPORT",
+    "formats": [
+      "MARKDOWN"
+    ],
+    "max_repair_rounds": 1,
+    "keyword_category_ids": [],
+    "bullet_ceilings": [],
+    "max_pages": 2
+  },
+  "revision": null
+}

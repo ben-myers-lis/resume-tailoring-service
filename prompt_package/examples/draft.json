@@ -1,0 +1,412 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "synthetic-run-001",
+  "candidate_id": "synthetic-candidate-001",
+  "jd_id": "synthetic-jd-001",
+  "revision_id": "draft-001",
+  "mode": "APPLICATION",
+  "status": "COMPLETE_DRAFT",
+  "notices": [],
+  "summary": {
+    "text": "Software engineer building internal reporting and inventory services with Python, Java, REST APIs, and PostgreSQL. Experience includes production reporting, request validation, SQL optimization, and automated tests. Communicates implementation tradeoffs to business analysts using the reporting workflow.",
+    "claim_ids": [
+      "C1",
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "highlights": [
+      {
+        "phrase": "REST APIs",
+        "occurrence": 1,
+        "kind": "TECHNICAL"
+      }
+    ]
+  },
+  "skills": [
+    {
+      "group_id": "G1",
+      "items": [
+        {
+          "text": "Python",
+          "claim_ids": [
+            "C1"
+          ]
+        },
+        {
+          "text": "Java",
+          "claim_ids": [
+            "C4"
+          ]
+        },
+        {
+          "text": "FastAPI",
+          "claim_ids": [
+            "C1"
+          ]
+        },
+        {
+          "text": "REST APIs",
+          "claim_ids": [
+            "C1"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "G2",
+      "items": [
+        {
+          "text": "PostgreSQL",
+          "claim_ids": [
+            "C1"
+          ]
+        },
+        {
+          "text": "SQL",
+          "claim_ids": [
+            "C2"
+          ]
+        }
+      ]
+    },
+    {
+      "group_id": "G3",
+      "items": [
+        {
+          "text": "Pydantic",
+          "claim_ids": [
+            "C1"
+          ]
+        },
+        {
+          "text": "pytest",
+          "claim_ids": [
+            "C3"
+          ]
+        },
+        {
+          "text": "Integration testing",
+          "claim_ids": [
+            "C4"
+          ]
+        }
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "role_id": "R1",
+      "scope": {
+        "text": "",
+        "claim_ids": [],
+        "highlights": []
+      },
+      "bullets": [
+        {
+          "bullet_id": "R1-B01",
+          "text": "Built an internal reporting service with Python and FastAPI REST APIs, using PostgreSQL storage and Pydantic request validation to support business analysts in production.",
+          "claim_ids": [
+            "C1"
+          ],
+          "highlights": [
+            {
+              "phrase": "FastAPI",
+              "occurrence": 1,
+              "kind": "TECHNICAL"
+            }
+          ],
+          "metric_ids": []
+        },
+        {
+          "bullet_id": "R1-B02",
+          "text": "Reduced nightly report refresh from 12 to 8 minutes by replacing repeated SQL scans with a shared aggregation query on the same report workload.",
+          "claim_ids": [
+            "C2"
+          ],
+          "highlights": [],
+          "metric_ids": [
+            "M1"
+          ]
+        },
+        {
+          "bullet_id": "R1-B03",
+          "text": "Explained API tradeoffs to business analysts and maintained pytest coverage for the reporting service, connecting implementation decisions to the users operating the workflow.",
+          "claim_ids": [
+            "C3"
+          ],
+          "highlights": [
+            {
+              "phrase": "pytest",
+              "occurrence": 1,
+              "kind": "TECHNICAL"
+            }
+          ],
+          "metric_ids": []
+        }
+      ]
+    },
+    {
+      "role_id": "R2",
+      "scope": {
+        "text": "",
+        "claim_ids": [],
+        "highlights": []
+      },
+      "bullets": [
+        {
+          "bullet_id": "R2-B01",
+          "text": "Maintained Java services and PostgreSQL queries for an internal inventory application, adding integration tests for order reconciliation.",
+          "claim_ids": [
+            "C4"
+          ],
+          "highlights": [
+            {
+              "phrase": "PostgreSQL",
+              "occurrence": 1,
+              "kind": "TECHNICAL"
+            }
+          ],
+          "metric_ids": []
+        }
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "C1",
+      "role_id": "R1",
+      "text": "Built an internal reporting service with Python and FastAPI REST APIs, using PostgreSQL storage and Pydantic request validation to support business analysts in production.",
+      "status": "SUPPORTED",
+      "fact_ids": [
+        "F1"
+      ],
+      "profile_paths": [],
+      "scope_note": "Supplied synthetic fixture evidence; not a real person or achievement."
+    },
+    {
+      "claim_id": "C2",
+      "role_id": "R1",
+      "text": "Reduced nightly report refresh from 12 to 8 minutes by replacing repeated SQL scans with a shared aggregation query on the same report workload.",
+      "status": "SUPPORTED",
+      "fact_ids": [
+        "F2"
+      ],
+      "profile_paths": [],
+      "scope_note": "Supplied synthetic fixture evidence; not a real person or achievement."
+    },
+    {
+      "claim_id": "C3",
+      "role_id": "R1",
+      "text": "Explained API tradeoffs to business analysts and maintained pytest coverage for the reporting service, connecting implementation decisions to the users operating the workflow.",
+      "status": "SUPPORTED",
+      "fact_ids": [
+        "F1"
+      ],
+      "profile_paths": [],
+      "scope_note": "Supplied synthetic fixture evidence; not a real person or achievement."
+    },
+    {
+      "claim_id": "C4",
+      "role_id": "R2",
+      "text": "Maintained Java services and PostgreSQL queries for an internal inventory application, adding integration tests for order reconciliation.",
+      "status": "SUPPORTED",
+      "fact_ids": [
+        "F3"
+      ],
+      "profile_paths": [],
+      "scope_note": "Supplied synthetic fixture evidence; not a real person or achievement."
+    }
+  ],
+  "metrics": [
+    {
+      "metric_id": "M1",
+      "bullet_ids": [
+        "R1-B02"
+      ],
+      "claim_id": "C2",
+      "status": "SUPPLIED",
+      "display_text": "12 to 8 minutes",
+      "baseline": "12",
+      "result": "8",
+      "unit": "minutes",
+      "workload": "Same nightly reporting workload",
+      "time_window": "Five nightly runs",
+      "method": "Elapsed refresh runtime comparison",
+      "attribution": "Replacement of repeated SQL scans with a shared aggregation query",
+      "fact_ids": [
+        "F2"
+      ],
+      "calculation": null,
+      "assumptions": [],
+      "missing_context": [
+        "No report row count supplied."
+      ]
+    }
+  ],
+  "requirement_coverage": [
+    {
+      "requirement_id": "Q1",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q2",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q3",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q4",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q5",
+      "status": "MISSING",
+      "extent": "NONE",
+      "fact_ids": [],
+      "bullet_ids": [],
+      "placement": "OMITTED",
+      "note": "Preferred alternatives lack source evidence."
+    },
+    {
+      "requirement_id": "Q6",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q7",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B03"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    }
+  ],
+  "term_decisions": [
+    {
+      "term": "Python",
+      "decision": "INCLUDED",
+      "claim_ids": [
+        "C1"
+      ],
+      "note": "Source supports the named technology."
+    },
+    {
+      "term": "REST APIs",
+      "decision": "INCLUDED",
+      "claim_ids": [
+        "C1"
+      ],
+      "note": "Source supports the named technology."
+    },
+    {
+      "term": "PostgreSQL",
+      "decision": "INCLUDED",
+      "claim_ids": [
+        "C1"
+      ],
+      "note": "Source supports the named technology."
+    },
+    {
+      "term": "Kubernetes",
+      "decision": "GAP",
+      "claim_ids": [],
+      "note": "Do not invent an alternative platform."
+    },
+    {
+      "term": "Cloud Run",
+      "decision": "GAP",
+      "claim_ids": [],
+      "note": "Do not invent an alternative platform."
+    }
+  ],
+  "role_plan": [
+    {
+      "role_id": "R1",
+      "business_overlap": "DIRECT",
+      "emphasis": "Production reporting service, measurable runtime, analyst communication.",
+      "requirement_ids": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q6",
+        "Q7"
+      ]
+    },
+    {
+      "role_id": "R2",
+      "business_overlap": "PARTIAL",
+      "emphasis": "Distinct Java, PostgreSQL, and integration-testing foundation.",
+      "requirement_ids": [
+        "Q3"
+      ]
+    }
+  ],
+  "gaps": [
+    "No supplied Kubernetes or Cloud Run evidence."
+  ],
+  "assumptions": [],
+  "technical_limits": [
+    "Only one measured outcome supplied; metric targets are not quotas."
+  ],
+  "company_notes": [
+    "Synthetic fixture companies. No public company research performed."
+  ],
+  "confirmation_items": [
+    "Are contacts and education available for inclusion?"
+  ],
+  "changes": [],
+  "lineage": []
+}

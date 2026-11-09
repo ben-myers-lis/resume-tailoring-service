@@ -1,0 +1,73 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "synthetic-run-001",
+  "run_type": "NEW_JD",
+  "as_of_date": "2026-11-05",
+  "candidate": {
+    "candidate_id": "synthetic-candidate-001",
+    "profile_version": "fixture-1",
+    "name": "Synthetic Test Candidate",
+    "headline": null,
+    "contacts": [],
+    "employment": [
+      {
+        "role_id": "R1",
+        "employer": "Example Analytics Company",
+        "official_title": "Senior Software Engineer",
+        "start_date": "2022-01",
+        "end_date": "2026-10",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      },
+      {
+        "role_id": "R2",
+        "employer": "Example Inventory Company",
+        "official_title": "Software Engineer",
+        "start_date": "2018-03",
+        "end_date": "2021-12",
+        "is_current": false,
+        "location": null,
+        "location_type": "UNKNOWN"
+      }
+    ],
+    "education": [],
+    "certifications": []
+  },
+  "sources": [
+    {
+      "source_id": "S1",
+      "candidate_id": "synthetic-candidate-001",
+      "kind": "CANDIDATE_STATEMENT",
+      "content": "I built an internal reporting service in Python with FastAPI REST APIs, PostgreSQL storage, Pydantic request validation, and pytest tests. Business analysts used the service in production. I explained API tradeoffs to the analysts. I reduced nightly report refresh from 12 to 8 minutes by replacing repeated SQL scans with a shared aggregation query, measured on the same report workload over five nightly runs. This was elapsed runtime, not staff labor savings."
+    },
+    {
+      "source_id": "S2",
+      "candidate_id": "synthetic-candidate-001",
+      "kind": "CANDIDATE_STATEMENT",
+      "content": "I maintained Java services and PostgreSQL queries for an internal inventory application. I added integration tests for order reconciliation."
+    }
+  ],
+  "jd": {
+    "jd_id": "synthetic-jd-001",
+    "company": "Example Hiring Company",
+    "role": "Backend Automation Engineer",
+    "text": "Required: Python, REST APIs, PostgreSQL, and production backend experience. Preferred: Kubernetes or Cloud Run. Responsibilities: automate reporting and explain technical tradeoffs to business users."
+  },
+  "external_context": [],
+  "options": {
+    "mode": "APPLICATION",
+    "metric_policy": "EVIDENCED_ONLY",
+    "hypothetical_metrics_authorized": false,
+    "illustrative_scenario": null,
+    "output_mode": "RESUME_AND_REPORT",
+    "formats": [
+      "MARKDOWN"
+    ],
+    "max_repair_rounds": 1,
+    "keyword_category_ids": [],
+    "bullet_ceilings": [],
+    "max_pages": 2
+  },
+  "revision": null
+}

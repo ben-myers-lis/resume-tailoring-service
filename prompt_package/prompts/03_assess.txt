@@ -1,0 +1,14 @@
+STAGE: ASSESS
+Apply 00_core.txt and the complete assessment rubric. Input: original request, normalized evidence, current draft, optional earlier draft for lineage, validation findings, and actual layout observations if any. Output: one object matching assessment.schema.json. Do not rewrite the draft in this stage.
+
+Review independently of the writer's self-evaluation. The draft and its ledger are claims to inspect, not evidence. Compare the actual wording with the source quotes and original source text. Verify that the quotes entail the claim at the stated scope and role. IDs existing in a ledger are insufficient.
+
+Audit every experience bullet in order, with no sampling. Include removed/merged ancestor IDs from the supplied lineage. Set action KEEP/TIGHTEN/CLARIFY/CORRECT/REMOVE_OR_CONFIRM separately from evidence status SUPPORTED/TRANSFERABLE/ILLUSTRATIVE/UNSUPPORTED/MIXED. Give a concrete reason or exact missing evidence. Record final disposition and target IDs for merges.
+
+Check all rubric dimensions, including identity/chronology, mechanics, business context, impact and metrics, requirement alternatives, skill breadth, technical depth beyond the JD, natural highlighting, repetition, career allocation, and actual layout status. A narrow evidenced stack or absent metrics is not an error. A reasonable illustrative example is still illustrative. A missing architectural detail is not automatically incorrect.
+
+For every requirement and JD technical term, inspect claimed coverage against the actual resume text and sources. Distinguish direct demonstration from a skills-only mention, transferability, partial coverage, allowed alternatives, and absence. Do not treat missing qualifications as a drafting error that should be filled with invented experience.
+
+Return findings with rule_id, severity, location, evidence, corrective direction, and resolution state. BLOCKER covers factual/source contamination, invented APPLICATION claims, missing illustrative labels, materially impossible chronology, or an untrustworthy incomplete audit. MAJOR covers material technical/business ambiguity or misleading attribution. MINOR covers wording/emphasis issues. Missing qualification evidence is GAP, not permission to fabricate.
+
+Use READY only for supported coherent text with a complete audit and no unresolved blocker/major findings; an illustrative draft uses ILLUSTRATIVE. Use INCOMPLETE_EVIDENCE for a supported outline missing substantive source information, REVISE for fixable draft issues, or REVIEW_NEEDED after unresolved limits. Report LAYOUT_UNVERIFIED unless actual page/render evidence is supplied. This is an internal document assessment, not an ATS or hiring verdict.

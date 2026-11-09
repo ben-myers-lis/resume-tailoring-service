@@ -1,0 +1,50 @@
+[
+  {
+    "file": "case_01_strong_mle.json",
+    "candidate": "Avery Lindqvist",
+    "job": "Senior Machine Learning Engineer at Lumen Health AI",
+    "expectation": "Strong match: 7 yrs ML titles vs Senior MLE"
+  },
+  {
+    "file": "case_02_strong_llm.json",
+    "candidate": "Jordan Okafor",
+    "job": "LLM Application Engineer at Brightpath Software",
+    "expectation": "Strong match: SWE then AI Engineer vs LLM App Engineer"
+  },
+  {
+    "file": "case_03_stretch_staff.json",
+    "candidate": "Priya Ramanathan",
+    "job": "Staff Machine Learning Engineer at Orbital Robotics",
+    "expectation": "Stretch: 4 yrs data science vs Staff MLE (8+ yrs, leadership)"
+  },
+  {
+    "file": "case_04_adjacent_platform.json",
+    "candidate": "Marcus Feld",
+    "job": "AI Platform Engineer at Northwind Commerce",
+    "expectation": "Adjacent: 8 yrs backend/SRE vs AI Platform Engineer"
+  },
+  {
+    "file": "case_05_transferable_analyst.json",
+    "candidate": "Sofia Marchetti",
+    "job": "Machine Learning Engineer at Cascade Insurance",
+    "expectation": "Transferable stretch: analytics titles vs mid MLE"
+  },
+  {
+    "file": "case_06_clear_mismatch.json",
+    "candidate": "Daniel Whitcombe",
+    "job": "Senior Applied Scientist, NLP at Helix Research Labs",
+    "expectation": "Clear mismatch: accounting titles vs PhD Applied Scientist"
+  },
+  {
+    "file": "case_07_overlap_gap.json",
+    "candidate": "Lena Kowalczyk",
+    "job": "Lead AI Engineer at Meridian Logistics",
+    "expectation": "Overlapping roles and a gap: tests conservative tenure counting"
+  },
+  {
+    "file": "case_08_junior.json",
+    "candidate": "Ethan Brooks",
+    "job": "Junior AI Engineer at Sparrow Labs",
+    "expectation": "Junior: internship plus 1 yr vs Junior AI Engineer"
+  }
+]

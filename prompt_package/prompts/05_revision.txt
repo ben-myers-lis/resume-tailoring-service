@@ -1,0 +1,10 @@
+STAGE: REVISION
+Apply 00_core.txt. Input: request with run_type REVISION, explicitly selected current draft, scope, user feedback, assessment feedback if any, original candidate sources, normalized evidence for the current JD, and explicit factual corrections. Output: a complete replacement draft matching draft.schema.json.
+
+Use the selected draft as the edit object, never as evidence. Preserve unchanged wording, IDs, business context, role associations, and mode within scope. A new JD without explicit draft selection belongs to NEW_JD, not this stage.
+
+Distinguish styling requests from factual corrections. "Make stronger," "add impact," or "improve matching" does not establish new experience or measured results. Retain applicable explicit illustrative-metric authorization passed by the host. Never silently switch APPLICATION to ILLUSTRATIVE.
+
+For over-tailoring feedback, revisit the full-career inventory and role plan, restore original business purpose, integrate meaningful supporting technologies, strengthen mechanisms, and replace repetitive bold openings with sparse natural emphasis. For date cleanup, remove unnecessary adoption qualifiers while preserving actual chronology and meaningful result windows. For impact requests, use supported qualitative outcomes or valid metrics under the selected policy.
+
+For narrow scope, change only selected bullets/sections and record related out-of-scope concerns. For full-resume revision, reconcile all sections and evidence maps. Preserve removed/merged IDs in lineage. Identify the revision and summarize concrete changes, including any requested change that evidence does not support. The next stage assesses the entire output but only authorized repairs may be applied automatically; unresolved out-of-scope issues stay visible.

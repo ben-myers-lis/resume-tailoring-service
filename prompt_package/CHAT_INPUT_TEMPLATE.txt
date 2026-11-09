@@ -1,0 +1,51 @@
+PORTABLE RESUME TAILORING — INPUT TEMPLATE
+Use with Resume_Tailoring_Complete_Prompts_v1.txt in a fresh conversation. Replace the fields below with original candidate information. No prior account/project is required.
+
+RUN TYPE: NEW_JD
+MODE: APPLICATION
+AS-OF DATE: YYYY-MM-DD
+OUTPUT: RESUME_AND_REPORT
+FORMATS: text (request DOCX/PDF only when the environment can create and inspect them)
+METRIC POLICY: EVIDENCED_ONLY
+HYPOTHETICAL METRICS AUTHORIZED: no
+ILLUSTRATIVE SCENARIO: none
+CANDIDATE ID AND PROFILE VERSION:
+
+ORIGINAL CANDIDATE INFORMATION
+Name:
+Supplied location/contact/portfolio links:
+Education and certifications:
+
+For each employment role:
+- Role ID, employer, official title, start/end dates, work location if known:
+- Employer context, candidate team/product, and source:
+- Actual project(s), users, workflow, input/data, problem, period:
+- Candidate contribution and ownership:
+- Technologies, purpose/component, usage status, and period:
+- Production delivery, actual users/support, or prototype/evaluation scope:
+- Outcomes and metrics with baseline/result/units/workload/window/method/attribution when known:
+- Collaboration, mentoring, and leadership actually supported:
+- Source ID and origin; identify any AI-generated or unconfirmed content:
+
+EXPLICIT FACTUAL CORRECTIONS:
+List each correction and its source. Style feedback is not a factual correction.
+
+CURRENT TARGET COMPANY, ROLE, AND COMPLETE JD:
+
+OPTIONAL EXTERNAL EVIDENCE:
+Official company/technology source, date, relevant excerpt, and URL. This establishes context, not candidate participation.
+
+OTHER PREFERENCES:
+Use the package defaults unless explicitly changed. Missing facts stay missing; confirmation items belong in the report.
+
+FOR REVISION ONLY:
+RUN TYPE: REVISION
+Selected current draft and its mode:
+Same original source facts and current JD:
+Scope (full resume or exact sections/bullet IDs):
+User feedback and assessment feedback:
+Applicable prior illustrative-metric authorization, if any:
+Explicit new factual corrections, if any:
+
+INSTRUCTION
+Run the integrated workflow. For a new JD start fresh from these original facts. Draft, assess every bullet, repair within the available evidence, and present the resume plus separate report. Use the bundled keyword vocabulary only where supported. Do not pause for optional missing facts. Report layout as unverified unless it is actually rendered and inspected.

@@ -1,0 +1,31 @@
+RESUME TAILORING SERVICE — PORTABLE v1.0.0
+Validation date: November 5, 2026 UTC
+
+EXECUTED CHECKS
+- 34 automated contract tests passed with Python 3.12.14 and jsonschema 4.26.0.
+- All four JSON Schema Draft 2020-12 contracts passed schema validation.
+- The synthetic request, normalized evidence, draft, and assessment passed their contracts.
+- The offline normalize -> draft -> assess orchestration demonstration completed using prerecorded synthetic fixtures. No live model call occurred.
+- Bounded repair behavior was tested with a synthetic revise -> repair -> reassess sequence; unresolved work returned REVIEW_NEEDED.
+- Checks covered fresh-JD isolation, cross-candidate sources, evidence quotes, unconfirmed-source promotion, public-context separation, wrong-employer evidence, requirement/term accounting, mode and metric authorization, illustrative notices, audit completeness, revision scope, removed-bullet lineage, emphasis references, metric provenance, and false layout claims.
+- Keyword catalog IDs were checked for all 22 original categories, in order. The complete extracted text is retained alongside the structured vocabulary.
+- 24 semantic evaluation cases were included for future live-model evaluation.
+- Application Python files passed syntax compilation.
+
+MANUAL CONTENT REVIEW
+- Integrated the original keyword template, actual Resume Assessment pack, and latest tailoring revision 3.
+- Preserved the fresh-source rule, broader evidenced skills, natural technical depth, sparse emphasis, conditional 2–3/1–2 metric targets, explicit mode boundaries, and no unnecessary adoption years.
+- Resolved older conflicting rules in favor of later user decisions; archived sources are not runtime instructions.
+- The conversation edition includes its complete policy, input template, workflow, keyword reference, and assessment rubric without separate account/project dependencies.
+
+LIMITS
+- No live-model generation, model comparison, ATS evaluation, recruiter study, or cross-provider quality benchmark was run.
+- Passing contracts checks structure and selected workflow invariants, not semantic truth, completeness of every extracted JD term, or resume quality.
+- Semantic evaluation cases must be run against the chosen model and application adapter before claiming equivalent output quality.
+- The included renderer produces Markdown only. No resume DOCX/PDF was generated or visually inspected in this packaging task, and no two-page layout is certified.
+- The unavailable Stellan_Reed_Lyra_Health_Resume_Draft.pdf attachment was not read or used.
+- Historical technical-reference links were retained; this task did not verify all current service branding or tool release dates.
+
+REPRODUCIBILITY
+Install requirements.txt, run python -m unittest discover -s tests -v, then python -m app.demo.
+Run python -m app.build_bundle after intentional prompt changes. The generated manifest records file sizes and SHA-256 digests; the archive excludes Python cache files.

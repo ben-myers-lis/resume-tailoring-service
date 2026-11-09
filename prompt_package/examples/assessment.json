@@ -1,0 +1,250 @@
+{
+  "package_version": "1.0.0",
+  "run_id": "synthetic-run-001",
+  "candidate_id": "synthetic-candidate-001",
+  "jd_id": "synthetic-jd-001",
+  "revision_id": "draft-001",
+  "verdict": "READY",
+  "findings": [
+    {
+      "finding_id": "A1",
+      "rule_id": "P05",
+      "severity": "GAP",
+      "location": "Q5",
+      "issue": "Preferred deployment-platform alternative lacks evidence.",
+      "evidence": "No Kubernetes or Cloud Run use in the original sources.",
+      "recommended_action": "Keep as a gap rather than inventing experience.",
+      "resolved": false
+    }
+  ],
+  "bullet_audit": [
+    {
+      "bullet_id": "R1-B01",
+      "action": "KEEP",
+      "evidence_status": "SUPPORTED",
+      "fact_ids": [
+        "F1"
+      ],
+      "reason": "Contribution and scope follow the supplied synthetic source.",
+      "correction_or_question": "",
+      "disposition": "RETAINED",
+      "target_bullet_ids": []
+    },
+    {
+      "bullet_id": "R1-B02",
+      "action": "KEEP",
+      "evidence_status": "SUPPORTED",
+      "fact_ids": [
+        "F2"
+      ],
+      "reason": "Contribution and scope follow the supplied synthetic source.",
+      "correction_or_question": "",
+      "disposition": "RETAINED",
+      "target_bullet_ids": []
+    },
+    {
+      "bullet_id": "R1-B03",
+      "action": "KEEP",
+      "evidence_status": "SUPPORTED",
+      "fact_ids": [
+        "F1"
+      ],
+      "reason": "Contribution and scope follow the supplied synthetic source.",
+      "correction_or_question": "",
+      "disposition": "RETAINED",
+      "target_bullet_ids": []
+    },
+    {
+      "bullet_id": "R2-B01",
+      "action": "KEEP",
+      "evidence_status": "SUPPORTED",
+      "fact_ids": [
+        "F3"
+      ],
+      "reason": "Contribution and scope follow the supplied synthetic source.",
+      "correction_or_question": "",
+      "disposition": "RETAINED",
+      "target_bullet_ids": []
+    }
+  ],
+  "section_checks": [
+    {
+      "section": "IDENTITY_HISTORY",
+      "status": "PASS",
+      "note": "Checked against the synthetic fixture; short summary and three skills groups reflect limited source scope."
+    },
+    {
+      "section": "SUMMARY",
+      "status": "PASS",
+      "note": "Checked against the synthetic fixture; short summary and three skills groups reflect limited source scope."
+    },
+    {
+      "section": "SKILLS",
+      "status": "PASS",
+      "note": "Checked against the synthetic fixture; short summary and three skills groups reflect limited source scope."
+    },
+    {
+      "section": "METRICS",
+      "status": "PASS",
+      "note": "Checked against the synthetic fixture; short summary and three skills groups reflect limited source scope."
+    },
+    {
+      "section": "BUSINESS_CONTEXT",
+      "status": "PASS",
+      "note": "Checked against the synthetic fixture; short summary and three skills groups reflect limited source scope."
+    },
+    {
+      "section": "TECHNICAL_COHERENCE",
+      "status": "PASS",
+      "note": "Checked against the synthetic fixture; short summary and three skills groups reflect limited source scope."
+    },
+    {
+      "section": "JD_COVERAGE",
+      "status": "PASS",
+      "note": "Checked against the synthetic fixture; short summary and three skills groups reflect limited source scope."
+    },
+    {
+      "section": "READABILITY",
+      "status": "PASS",
+      "note": "Checked against the synthetic fixture; short summary and three skills groups reflect limited source scope."
+    },
+    {
+      "section": "LAYOUT",
+      "status": "UNVERIFIED",
+      "note": "No page renderer used."
+    }
+  ],
+  "requirement_coverage": [
+    {
+      "requirement_id": "Q1",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q2",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q3",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q4",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q5",
+      "status": "MISSING",
+      "extent": "NONE",
+      "fact_ids": [],
+      "bullet_ids": [],
+      "placement": "OMITTED",
+      "note": "Preferred alternatives lack source evidence."
+    },
+    {
+      "requirement_id": "Q6",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B01"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    },
+    {
+      "requirement_id": "Q7",
+      "status": "SUPPORTED",
+      "extent": "FULL",
+      "fact_ids": [
+        "F1"
+      ],
+      "bullet_ids": [
+        "R1-B03"
+      ],
+      "placement": "EXPERIENCE",
+      "note": "Demonstrated in the supplied reporting-service contribution."
+    }
+  ],
+  "term_decisions": [
+    {
+      "term": "Python",
+      "decision": "INCLUDED",
+      "claim_ids": [
+        "C1"
+      ],
+      "note": "Source supports the named technology."
+    },
+    {
+      "term": "REST APIs",
+      "decision": "INCLUDED",
+      "claim_ids": [
+        "C1"
+      ],
+      "note": "Source supports the named technology."
+    },
+    {
+      "term": "PostgreSQL",
+      "decision": "INCLUDED",
+      "claim_ids": [
+        "C1"
+      ],
+      "note": "Source supports the named technology."
+    },
+    {
+      "term": "Kubernetes",
+      "decision": "GAP",
+      "claim_ids": [],
+      "note": "Do not invent an alternative platform."
+    },
+    {
+      "term": "Cloud Run",
+      "decision": "GAP",
+      "claim_ids": [],
+      "note": "Do not invent an alternative platform."
+    }
+  ],
+  "confirmation_items": [
+    "Are contacts and education available for inclusion?"
+  ],
+  "layout_status": "LAYOUT_UNVERIFIED",
+  "page_count": null,
+  "summary": "Structurally complete supported synthetic text fixture with a preferred-platform evidence gap. No hiring or layout claim."
+}

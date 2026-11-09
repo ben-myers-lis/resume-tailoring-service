@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "normalized",
+  "type": "object",
+  "properties": {
+    "package_version": {
+      "const": "1.0.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jd_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "fact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fact_type": {
+            "enum": [
+              "PROJECT",
+              "TECHNOLOGY",
+              "OUTCOME",
+              "OWNERSHIP",
+              "PERIOD",
+              "COLLABORATION",
+              "DOMAIN",
+              "OTHER"
+            ]
+          },
+          "statement": {
+            "type": "string"
+          },
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "quote": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "SUPPLIED",
+              "DOCUMENTED",
+              "UNCONFIRMED"
+            ]
+          }
+        },
+        "required": [
+          "fact_id",
+          "role_id",
+          "fact_type",
+          "statement",
+          "source_id",
+          "quote",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string"
+          },
+          "quote": {
+            "type": "string"
+          },
+          "priority": {
+            "enum": [
+              "REQUIRED",
+              "PREFERRED",
+              "RESPONSIBILITY"
+            ]
+          },
+          "technical_terms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "alternative_group": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "threshold": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "requirement_id",
+          "text",
+          "quote",
+          "priority",
+          "technical_terms",
+          "alternative_group",
+          "threshold"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string"
+          },
+          "role_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "usage_status": {
+            "enum": [
+              "PRODUCTION",
+              "PROTOTYPE",
+              "EVALUATION",
+              "FAMILIARITY",
+              "MIGRATION",
+              "UNKNOWN"
+            ]
+          }
+        },
+        "required": [
+          "term",
+          "role_id",
+          "fact_ids",
+          "usage_status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "company_context": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "alignment": {
+            "enum": [
+              "DOCUMENTED_RELATED",
+              "PLAUSIBLE_DOMAIN_FIT",
+              "UNVERIFIED"
+            ]
+          },
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "candidate_participation_fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "role_id",
+          "alignment",
+          "source_ids",
+          "candidate_participation_fact_ids",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "source_conflicts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "package_version",
+    "run_id",
+    "candidate_id",
+    "jd_id",
+    "profile_version",
+    "facts",
+    "requirements",
+    "inventory",
+    "company_context",
+    "source_conflicts",
+    "evidence_gaps"
+  ],
+  "additionalProperties": false
+}

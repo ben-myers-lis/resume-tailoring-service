@@ -1,0 +1,60 @@
+INTEGRATED RESUME ASSESSMENT RUBRIC v1.0.0
+Uses the original Resume Assessment pack plus tailoring revisions through Assessment Cycle 2. Review the original candidate inputs, exact JD, mode, source records, and current draft. A fluent draft and a well-formed JSON object can both contain false claims.
+
+A01 — Source integrity [P02–P04]
+Does each material claim follow from the original facts at its stated scope? Inspect actual source text, not only citations/IDs. Detect generated-resume carryover, unconfirmed facts promoted to supported, copied company achievements, and cross-candidate contamination. Check every skills item, summary claim, bullet, and metric. In APPLICATION omit unsupported claims; in ILLUSTRATIVE retain visible labels and assumption records.
+
+A02 — Identity, history, and experience thresholds [P06]
+Compare names, contacts, employer/title/dates, education, and portfolio links with original structured inputs. Check chronology and conservative interval union. Separately assess software tenure, production ML tenure, LLM/tool tenure, and leadership scope. A broad title or company industry is not evidence of specialized work.
+
+A03 — Technical feasibility and causal precision [P08]
+For each bullet identify the actual mechanism and result. Check tool responsibilities, architecture/data flow, usage status, compatibility, and period. Apply RAG access/relevance/citation distinctions, structure-versus-truth validation, application-enforced tool controls, scheduling-versus-incremental logic, forecast leakage/baselines, and telemetry-versus-cost distinctions where relevant. Do not invent implementation details to repair a sentence. Missing detail is not automatically an error.
+
+A04 — Business purpose and company alignment [P07]
+Can a reviewer understand the supported users, workflow, problem, candidate contribution, and result across the role? Is it an internal product, customer product, or client engagement? Separate candidate evidence, official company context, and target-JD overlap. Use DOCUMENTED_RELATED, PLAUSIBLE_DOMAIN_FIT, or UNVERIFIED for company context, and separately record evidence of candidate participation. Never transfer a public case study to the individual.
+
+A05 — Impact and measurement [P12]
+Does the contribution deliver a concrete capability or supported outcome? Select outcome measures that reflect the JD's important responsibilities. Check provenance, baseline/result, units, comparable population/workload, period, method, attribution, and missing context. Differentiate evaluation, benchmark, production, and business results. Audit percent versus percentage points, mean versus p95, recall versus factual accuracy, runtime versus labor, and forecast error versus revenue. Targets of 2–3 recent-role and 1–2 second-role metric bullets are conditional; zero supported metrics can be correct. Fictional examples require explicit authorization and notices.
+
+A06 — JD matching and alternatives [P05]
+Review every material requirement and every JD technical term. Required, preferred, responsibility, and alternative membership must remain explicit. Inspect direct demonstration versus skills-only naming, partial evidence, transferability, and absence. Do not convert related technology into exact-tool experience. Report gaps without inventing qualifications. Ignore job-board match percentages and never replace them with a fabricated ATS score.
+
+A07 — Skills breadth and coherence [P10]
+Is the section drawn from the full-career inventory, with meaningful complementary technologies beyond the JD? Are matching terms integrated by function rather than copied in JD order? Each skill needs a legitimate project/component or scoped familiarity basis. JD terms should be a minority when evidence supports breadth, but no fixed ratio or padding is allowed. A genuinely narrow stack is acceptable. Target roughly 5–8 unlabeled unbolded groups when supported.
+
+A08 — Technical depth in bullets [P08, P11]
+Do tools have distinct responsibilities that explain the contribution? Are supporting technologies beyond the JD present naturally where supported? Avoid generic "used AI" statements, disconnected stacks, and invented migrations. Keep useful tool-light leadership contributions. Tool count alone is not technical strength.
+
+A09 — Career allocation and distinct evidence [P09, P11]
+Check all roles, not just the latest. Retain actual project purpose and ownership, use relevant older evidence, preserve progression, and avoid repeated accomplishments with different company names. Concentrated matching in one role can be valid. Bullet counts are ceilings, not a mandate to pad.
+
+A10 — Hiring-manager readability [P11]
+Skim the summary and the first few bullets of each role. Are contribution, technical mechanism, and business purpose quickly understandable? Remove empty promotional phrasing, semicolons, repetitive openings, low-value duties, and duplicated testing/monitoring/collaboration. Prefer 45–70 summary words and usually 18–30 bullet words, with justified exceptions. Preserve meaning and strongest evidence.
+
+A11 — Natural emphasis [P13]
+Skills are unbolded and have no category labels. Summary opening/experience figure are unbolded. Body emphasis is mainly short technical phrases, with occasional important business capability/outcome phrases. No bold verbs/conjunctions, standalone numbers, whole sentences, or recurring bold bullet openings. Some bullets can have no emphasis. Review distribution across the whole page.
+
+A12 — Dates and historical plausibility [P08]
+Keep employment dates. Omit awkward adoption qualifiers unless they materially explain the contribution or measurement. Verify materially uncertain tool availability with supplied/available official evidence, or qualify/omit. Removing a date phrase must not conceal impossible chronology. A tool appearing in a long role was not necessarily used throughout it.
+
+A13 — Layout and delivery [P14]
+Single-column Letter, about 11-point body, max two pages without padding. Check heading attachment, density, spacing, clipping, role splits, selective emphasis, and selectable text after rendering every page. Without actual rendered evidence mark LAYOUT_UNVERIFIED. Confirm the delivered revision's actual text and formatting; do not assume an old-link/cache issue. A model statement is not render verification.
+
+A14 — Audit completeness and repair [P15–P16]
+Every original and current bullet needs a stable ID and audit row. Separate action from evidence status. Retain removed/merged lineage. Review non-bullet sections too. After repair assess the actual replacement revision. Report unresolved issues honestly when the repair budget is exhausted. Optional confirmation items do not block an evidence-preserving draft.
+
+ACTION DEFINITIONS
+KEEP: coherent and permitted by the selected mode. An illustrative Keep remains ILLUSTRATIVE.
+TIGHTEN: valid claim, wording/repetition can improve.
+CLARIFY: material ambiguity; identify the specific missing information.
+CORRECT: demonstrable factual, chronological, technical, or causal error.
+REMOVE_OR_CONFIRM: unsupported APPLICATION claim; omit it until explicitly supported.
+
+VERDICTS
+READY: complete supported text review, no unresolved BLOCKER/MAJOR finding, audit complete. It is not a guarantee of qualifications or selection; layout can still be unverified.
+INCOMPLETE_EVIDENCE: supported outline/draft, but substantive original facts are missing. Never fill those gaps with keyword vocabulary.
+ILLUSTRATIVE: coherent labeled test artifact; never application-ready merely because its writing passes.
+REVISE: fixable writing/evidence/mechanism issue within available inputs.
+REVIEW_NEEDED: unresolved material issue or operational limitation after bounded attempts.
+
+No weighted total is required. Do not invent numerical ATS, interview, or hiring probabilities. When comparing prompt versions, use explicit regression cases and inspect failures rather than optimizing a self-assigned score.

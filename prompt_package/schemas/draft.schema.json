@@ -1,0 +1,681 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "draft",
+  "type": "object",
+  "properties": {
+    "package_version": {
+      "const": "1.0.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jd_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "enum": [
+        "APPLICATION",
+        "ILLUSTRATIVE"
+      ]
+    },
+    "status": {
+      "enum": [
+        "COMPLETE_DRAFT",
+        "INCOMPLETE_EVIDENCE",
+        "ILLUSTRATIVE"
+      ]
+    },
+    "notices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "claim_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "highlights": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "phrase": {
+                "type": "string",
+                "minLength": 1
+              },
+              "occurrence": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "kind": {
+                "enum": [
+                  "TECHNICAL",
+                  "BUSINESS"
+                ]
+              }
+            },
+            "required": [
+              "phrase",
+              "occurrence",
+              "kind"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "text",
+        "claim_ids",
+        "highlights"
+      ],
+      "additionalProperties": false
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "claim_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "text",
+                "claim_ids"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "group_id",
+          "items"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "claim_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "highlights": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "phrase": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "occurrence": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "kind": {
+                      "enum": [
+                        "TECHNICAL",
+                        "BUSINESS"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "phrase",
+                    "occurrence",
+                    "kind"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "text",
+              "claim_ids",
+              "highlights"
+            ],
+            "additionalProperties": false
+          },
+          "bullets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bullet_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "text": {
+                  "type": "string"
+                },
+                "claim_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                },
+                "highlights": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "phrase": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "occurrence": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "kind": {
+                        "enum": [
+                          "TECHNICAL",
+                          "BUSINESS"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "phrase",
+                      "occurrence",
+                      "kind"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "metric_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "bullet_id",
+                "text",
+                "claim_ids",
+                "highlights",
+                "metric_ids"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "role_id",
+          "scope",
+          "bullets"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "SUPPORTED",
+              "TRANSFERABLE",
+              "ILLUSTRATIVE"
+            ]
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "profile_paths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "scope_note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim_id",
+          "role_id",
+          "text",
+          "status",
+          "fact_ids",
+          "profile_paths",
+          "scope_note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bullet_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "claim_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "SUPPLIED",
+              "DERIVED",
+              "HYPOTHETICAL"
+            ]
+          },
+          "display_text": {
+            "type": "string"
+          },
+          "baseline": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "result": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "workload": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "time_window": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "method": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "attribution": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "calculation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "assumptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "missing_context": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "metric_id",
+          "bullet_ids",
+          "claim_id",
+          "status",
+          "display_text",
+          "baseline",
+          "result",
+          "unit",
+          "workload",
+          "time_window",
+          "method",
+          "attribution",
+          "fact_ids",
+          "calculation",
+          "assumptions",
+          "missing_context"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "requirement_coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "SUPPORTED",
+              "TRANSFERABLE",
+              "MISSING",
+              "ILLUSTRATIVE"
+            ]
+          },
+          "extent": {
+            "enum": [
+              "FULL",
+              "PARTIAL",
+              "NONE"
+            ]
+          },
+          "fact_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "bullet_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "placement": {
+            "enum": [
+              "EXPERIENCE",
+              "SKILLS_ONLY",
+              "SUMMARY",
+              "MULTIPLE",
+              "OMITTED"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "requirement_id",
+          "status",
+          "extent",
+          "fact_ids",
+          "bullet_ids",
+          "placement",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "term_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "INCLUDED",
+              "ALTERNATIVE_COVERED",
+              "GAP"
+            ]
+          },
+          "claim_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "term",
+          "decision",
+          "claim_ids",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "role_plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "business_overlap": {
+            "enum": [
+              "DIRECT",
+              "PARTIAL",
+              "NONE",
+              "UNKNOWN"
+            ]
+          },
+          "emphasis": {
+            "type": "string"
+          },
+          "requirement_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "role_id",
+          "business_overlap",
+          "emphasis",
+          "requirement_ids"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "technical_limits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "company_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confirmation_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 5
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lineage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "original_bullet_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "disposition": {
+            "enum": [
+              "REMOVED",
+              "MERGED"
+            ]
+          },
+          "target_bullet_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "original_bullet_id",
+          "disposition",
+          "target_bullet_ids",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "package_version",
+    "run_id",
+    "candidate_id",
+    "jd_id",
+    "revision_id",
+    "mode",
+    "status",
+    "notices",
+    "summary",
+    "skills",
+    "roles",
+    "claims",
+    "metrics",
+    "requirement_coverage",
+    "term_decisions",
+    "role_plan",
+    "gaps",
+    "assumptions",
+    "technical_limits",
+    "company_notes",
+    "confirmation_items",
+    "changes",
+    "lineage"
+  ],
+  "additionalProperties": false
+}
