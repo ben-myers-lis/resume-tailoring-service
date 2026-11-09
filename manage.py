@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 from service.auth import hash_password, password_problem
-from service.config import get_settings
+from service.config import db_target, get_settings
 from service.db import DB
 
 ROOT = Path(__file__).resolve().parent
@@ -29,7 +29,7 @@ def ask_password() -> str:
 
 def create_admin(name: str, email: str):
     s = get_settings()
-    db = DB(s.db_path)
+    db = DB(db_target(s), s.db_schema)
     if db.count_users():
         sys.exit("An account already exists. Sign in, or use reset-password.")
     u = db.create_user(email, name, hash_password(ask_password(), s.password_iterations), "ADMIN", [])
@@ -38,14 +38,14 @@ def create_admin(name: str, email: str):
 
 def reset_password(email: str):
     s = get_settings()
-    db = DB(s.db_path)
+    db = DB(db_target(s), s.db_schema)
     u = db.get_user_auth(email) or sys.exit("No account with that email.")
     db.update_user(u["id"], password_hash=hash_password(ask_password(), s.password_iterations))
     print("Password updated; all sessions for this account were signed out.")
 
 
 def seed_demo(email: str):
-    db = DB(get_settings().db_path)
+    db = DB(db_target(get_settings()), get_settings().db_schema)
     u = db.get_user_auth(email) or sys.exit("No account with that email.")
     jobs = {}
     for f in sorted((ROOT / "prompt_package/test_cases").glob("case_*.json")):

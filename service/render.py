@@ -1,4 +1,8 @@
-"""Render approved structured content to DOCX (and PDF via LibreOffice), then check page count.
+"""Render approved structured content to DOCX and PDF, then check page count.
+
+PDF engines: LibreOffice converts the DOCX (exact match, needs the soffice binary - Docker image);
+ReportLab draws the same layout directly in Python (no system packages - used on Vercel). With
+RTS_PDF_ENGINE=auto, LibreOffice is used when installed, otherwise ReportLab.
 
 Layout follows the prompt package's rules: Letter portrait, ~11 pt body, single column, no tables
 or text boxes, bold only where the draft's `highlights` say so, max 2 pages. Page count comes
@@ -11,6 +15,7 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -20,6 +25,7 @@ from docx.shared import Inches, Pt, RGBColor
 
 BODY_PT = 11
 FONT = "Calibri"
+FONT_DIR = Path(__file__).resolve().parent / "fonts"      # Carlito: metric-compatible with Calibri (OFL)
 MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
 
 
@@ -158,6 +164,7 @@ def build_docx(request: dict, draft: dict, path: Path) -> None:
 
 
 def to_pdf(docx_path: Path) -> Path | None:
+    """LibreOffice conversion of the DOCX. None when LibreOffice isn't installed."""
     exe = shutil.which("soffice") or shutil.which("libreoffice")
     if not exe:
         return None
@@ -169,12 +176,155 @@ def to_pdf(docx_path: Path) -> Path | None:
     return pdf if pdf.exists() else None
 
 
+_PDF_FONTS: tuple[str, str, str, str] | None = None
+
+
+def _pdf_fonts() -> tuple[str, str, str, str]:
+    """Register Carlito once; fall back to the built-in Helvetica family if the files are missing."""
+    global _PDF_FONTS
+    if _PDF_FONTS is None:
+        from reportlab.lib.fonts import addMapping
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+        names = {"Carlito": "Regular", "Carlito-Bold": "Bold", "Carlito-Italic": "Italic",
+                 "Carlito-BoldItalic": "BoldItalic"}
+        try:
+            for name, style in names.items():
+                pdfmetrics.registerFont(TTFont(name, str(FONT_DIR / f"Carlito-{style}.ttf")))
+            addMapping("Carlito", 0, 0, "Carlito")
+            addMapping("Carlito", 1, 0, "Carlito-Bold")
+            addMapping("Carlito", 0, 1, "Carlito-Italic")
+            addMapping("Carlito", 1, 1, "Carlito-BoldItalic")
+            _PDF_FONTS = ("Carlito", "Carlito-Bold", "Carlito-Italic", "Carlito-BoldItalic")
+        except Exception:
+            _PDF_FONTS = ("Helvetica", "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique")
+    return _PDF_FONTS
+
+
+def _x(text: str) -> str:
+    """Escape for ReportLab markup, keeping double spaces (it collapses whitespace like HTML)."""
+    return escape(text).replace("  ", "&nbsp; ")
+
+
+def _markup(block: dict) -> str:
+    return "".join(f"<b>{_x(seg)}</b>" if bold else _x(seg) for seg, bold in _spans(block))
+
+
+def build_pdf(request: dict, draft: dict, path: Path) -> None:
+    """The same layout as build_docx, drawn with ReportLab: Letter, 11 pt, single column, no tables."""
+    from reportlab.lib import colors
+    from reportlab.lib.enums import TA_CENTER
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import HRFlowable, Paragraph, SimpleDocTemplate
+
+    regular, bold_font, _italic, _bold_italic = _pdf_fonts()
+    lead = BODY_PT * 1.22                                           # Word "single" spacing for Calibri
+    body = ParagraphStyle("body", fontName=regular, fontSize=BODY_PT, leading=lead, spaceAfter=2)
+    center = ParagraphStyle("center", parent=body, alignment=TA_CENTER, spaceAfter=1)
+    name_style = ParagraphStyle("name", parent=center, fontName=bold_font, fontSize=20, leading=24)
+    contact = ParagraphStyle("contact", parent=center, fontSize=BODY_PT - 0.5, leading=(BODY_PT - 0.5) * 1.22,
+                             spaceAfter=4)
+    notice = ParagraphStyle("notice", parent=center, fontName=bold_font, spaceAfter=4)
+    heading = ParagraphStyle("heading", parent=body, fontName=bold_font, fontSize=BODY_PT + 0.5,
+                             leading=(BODY_PT + 0.5) * 1.22, spaceBefore=9, spaceAfter=0,
+                             textColor=colors.HexColor("#1F2A44"), keepWithNext=True)
+    role_head = ParagraphStyle("role", parent=body, spaceBefore=5, spaceAfter=0, keepWithNext=True)
+    role_title = ParagraphStyle("title", parent=body, spaceAfter=1)
+    line = ParagraphStyle("line", parent=body, spaceAfter=1)
+    bullet = ParagraphStyle("bullet", parent=body, leftIndent=0.25 * inch, bulletIndent=0.07 * inch,
+                            bulletFontName=regular, bulletFontSize=BODY_PT + 2, spaceAfter=1.5)
+
+    profile = request["candidate"]
+    roles = {r["role_id"]: r for r in profile["employment"]}
+    story: list = []
+
+    def add_heading(title: str):
+        story.append(Paragraph(escape(title.upper()), heading))
+        rule = HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#8A94A6"), spaceBefore=1,
+                          spaceAfter=3)
+        rule.keepWithNext = True
+        story.append(rule)
+
+    def add_bullet(text_markup: str):
+        story.append(Paragraph(text_markup, bullet, bulletText="\u2022"))
+
+    for n in draft.get("notices", []):                               # illustrative labels stay visible
+        story.append(Paragraph(escape(n), notice))
+    if profile.get("name"):
+        story.append(Paragraph(escape(profile["name"]), name_style))
+    if profile.get("headline"):
+        story.append(Paragraph(escape(profile["headline"]), center))
+    if profile.get("contacts"):
+        story.append(Paragraph(_x("  |  ".join(c["value"] for c in profile["contacts"])), contact))
+
+    if draft["summary"]["text"].strip():
+        add_heading("Professional Summary")
+        story.append(Paragraph(_markup(draft["summary"]), body))
+
+    groups = [g for g in draft["skills"] if g["items"]]
+    if groups:
+        add_heading("Technical Skills")
+        for g in groups:                                              # no category labels, no bold
+            add_bullet(escape(", ".join(i["text"] for i in g["items"])))
+
+    if draft["roles"]:
+        add_heading("Professional Experience")
+    for block in draft["roles"]:
+        r = roles[block["role_id"]]
+        head = f"<b>{escape(r['employer'])}</b>"
+        if r.get("location"):
+            loc = ("Headquarters: " if r.get("location_type") == "HEADQUARTERS" else "") + r["location"]
+            head += f"&nbsp; \u00b7&nbsp; {escape(loc)}"
+        story.append(Paragraph(head, role_head))
+        end = None if r["is_current"] else r["end_date"]
+        title_style = ParagraphStyle("t", parent=role_title,
+                                     keepWithNext=bool(block["bullets"] or block["scope"]["text"]))
+        story.append(Paragraph(f"<i>{escape(r['official_title'])}</i>&nbsp; |&nbsp; "
+                               f"{escape(fmt_date(r['start_date']))} \u2013 {escape(fmt_date(end))}", title_style))
+        if block["scope"]["text"].strip():
+            story.append(Paragraph(_markup(block["scope"]), line))
+        for b in block["bullets"]:
+            add_bullet(_markup(b))
+
+    for key, title in (("education", "Education"), ("certifications", "Certifications")):
+        if profile.get(key):
+            add_heading(title)
+            for item in profile[key]:
+                story.append(Paragraph(escape(item), line))
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pad = 6                                                         # SimpleDocTemplate's frame padding (pt)
+    doc = SimpleDocTemplate(str(path), pagesize=letter, topMargin=0.6 * inch - pad, bottomMargin=0.6 * inch - pad,
+                            leftMargin=0.7 * inch - pad, rightMargin=0.7 * inch - pad,
+                            title=f"{profile.get('name') or 'Resume'}", author=profile.get("name") or "")
+    doc.build(story)
+
+
+def make_pdf_file(request: dict, draft: dict, docx_path: Path, engine: str = "auto") -> Path | None:
+    """Produce resume.pdf next to the DOCX with the chosen engine. None if no engine is available."""
+    if engine in ("auto", "libreoffice"):
+        try:
+            pdf = to_pdf(docx_path)
+        except (subprocess.SubprocessError, OSError):
+            pdf = None
+        if pdf or engine == "libreoffice":
+            return pdf
+    try:
+        pdf = docx_path.with_suffix(".pdf")
+        build_pdf(request, draft, pdf)
+        return pdf
+    except ImportError:                                               # reportlab not installed
+        return None
+
+
 def page_count(pdf: Path) -> int:
     from pypdf import PdfReader
     return len(PdfReader(str(pdf)).pages)
 
 
-def render_files(request: dict, result: dict, out_dir: Path, make_pdf: bool = True) -> dict:
+def render_files(request: dict, result: dict, out_dir: Path, make_pdf: bool = True, pdf_engine: str = "auto") -> dict:
     """Write resume.md / resume.docx / resume.pdf. Withheld if blocking findings remain."""
     out_dir.mkdir(parents=True, exist_ok=True)
     if result["resume_markdown"] is None:
@@ -188,10 +338,7 @@ def render_files(request: dict, result: dict, out_dir: Path, make_pdf: bool = Tr
     files["docx"] = docx.name
     pages, layout = None, "LAYOUT_UNVERIFIED"
     if make_pdf:
-        try:
-            pdf = to_pdf(docx)
-        except (subprocess.SubprocessError, OSError):
-            pdf = None
+        pdf = make_pdf_file(request, result["draft"], docx, pdf_engine)
         if pdf:
             files["pdf"] = pdf.name
             pages = page_count(pdf)

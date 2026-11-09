@@ -1,0 +1,16 @@
+# Not needed by the deployed app
+.git
+.github
+.venv
+.env
+.env.*
+data
+tests
+**/__pycache__
+.pytest_cache
+*.db
+*.db-*
+*.zip
+Dockerfile
+docker-compose.yml
+.dockerignore

@@ -1,16 +1,24 @@
-"""SQLite storage for one organisation: an administrator plus invited team members.
+"""Storage for one organisation: an administrator plus invited team members.
 
-Access rules (who may see what) live in service/access.py; this module only stores data.
-SQL is plain and portable; moving to Postgres means swapping the connection and placeholders.
+Two backends share every query:
+  * SQLite (a file on disk) - local use, Docker, any single server with a persistent volume.
+  * Postgres (RTS_DATABASE_URL / DATABASE_URL) - required on serverless hosts such as Vercel,
+    where the disk is temporary and many instances run at once.
+Queries are written once in SQLite style ("?" / ":name" placeholders); the Postgres backend
+translates them. Access rules (who may see what) live in service/auth.py.
 """
 from __future__ import annotations
 
 import json
+import re
 import secrets
 import sqlite3
 import threading
+import time
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from pathlib import Path
 
 SCHEMA = """
@@ -80,6 +88,11 @@ CREATE TABLE IF NOT EXISTS prompt_proposals (
 CREATE TABLE IF NOT EXISTS app_settings (key TEXT PRIMARY KEY, value TEXT);
 CREATE TABLE IF NOT EXISTS drive_folders (
     candidate_id TEXT PRIMARY KEY REFERENCES candidates(id) ON DELETE CASCADE, folder_id TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS run_files (
+    run_id TEXT NOT NULL REFERENCES runs(id) ON DELETE CASCADE, name TEXT NOT NULL,
+    data BLOB NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY (run_id, name));
+CREATE TABLE IF NOT EXISTS login_failures (key TEXT NOT NULL, at REAL NOT NULL);
+CREATE INDEX IF NOT EXISTS login_failures_key ON login_failures(key, at);
 CREATE INDEX IF NOT EXISTS runs_status ON runs(status, created_at);
 CREATE INDEX IF NOT EXISTS runs_candidate ON runs(candidate_id, created_at);
 CREATE INDEX IF NOT EXISTS apps_candidate ON applications(candidate_id, applied_on);
@@ -89,10 +102,17 @@ CREATE INDEX IF NOT EXISTS assign_user ON assignments(user_id);
 
 JSON_FIELDS = {"employment", "education", "certifications", "sources", "fit", "result", "usage", "render",
                "permissions", "candidate_ids", "files", "edits", "warnings", "case_ids"}
-RUN_MIGRATIONS = {"prompt_version_id": "TEXT", "purpose": "TEXT NOT NULL DEFAULT 'LIVE'", "test_round_id": "TEXT"}
+# Columns added after the first release, in order (older databases get them on start-up).
+MIGRATIONS = [
+    ("runs", "prompt_version_id", "TEXT"),
+    ("runs", "purpose", "TEXT NOT NULL DEFAULT 'LIVE'"),
+    ("runs", "test_round_id", "TEXT"),
+    ("jobs", "candidate_id", "TEXT REFERENCES candidates(id) ON DELETE SET NULL"),   # v0.4
+    ("runs", "attempts", "INTEGER NOT NULL DEFAULT 0"),                                # v0.6 (queues)
+]
 APP_STATUSES = ("APPLIED", "INTERVIEW", "OFFER", "REJECTED", "WITHDRAWN")
 RUN_SUMMARY_COLS = ("runs.id, runs.candidate_id, runs.job_id, runs.created_by, runs.status, runs.force, runs.mode, "
-                    "runs.purpose, runs.prompt_version_id, runs.test_round_id, "
+                    "runs.purpose, runs.prompt_version_id, runs.test_round_id, runs.attempts, "
                     "runs.provider, runs.prompt_version, runs.profile_version, runs.fit_score, runs.delivery_status, "
                     "runs.error, runs.cost_usd, runs.seconds, runs.created_at, runs.started_at, runs.finished_at")
 
@@ -110,26 +130,181 @@ def _in(ids) -> tuple[str, list]:
     return ("(" + ",".join("?" * len(ids)) + ")") if ids else "(NULL)", ids
 
 
-class DB:
-    def __init__(self, path: Path):
+class Row:
+    """A result row readable by position (row[0]) or by name (row["id"]), like sqlite3.Row."""
+    __slots__ = ("_keys", "_values", "_index")
+
+    def __init__(self, keys, values):
+        self._keys, self._values, self._index = keys, tuple(values), None
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._values[key]
+        if self._index is None:
+            self._index = {k: i for i, k in enumerate(self._keys)}
+        return self._values[self._index[key]]
+
+    def keys(self):
+        return list(self._keys)
+
+    def __iter__(self):
+        return iter(self._values)
+
+    def __len__(self):
+        return len(self._values)
+
+
+class SQLiteBackend:
+    dialect = "sqlite"
+
+    def __init__(self, path):
+        path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
         self.conn.row_factory = sqlite3.Row
         self.conn.execute("PRAGMA journal_mode=WAL")
         self.conn.execute("PRAGMA foreign_keys=ON")
         self.conn.execute("PRAGMA busy_timeout=5000")
+
+    def execute(self, sql: str, args=()):
+        return self.conn.execute(sql, args)
+
+    def script(self, sql: str) -> None:
+        self.conn.executescript(sql)
+
+    def columns(self, table: str) -> set[str]:
+        return {r[1] for r in self.conn.execute(f"PRAGMA table_info({table})").fetchall()}
+
+    def add_column(self, table: str, col: str, decl: str) -> None:
+        if col not in self.columns(table):
+            self.conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {decl}")
+
+    @contextmanager
+    def transaction(self):
+        self.conn.execute("BEGIN IMMEDIATE")
+        try:
+            yield
+            self.conn.execute("COMMIT")
+        except BaseException:
+            self.conn.execute("ROLLBACK")
+            raise
+
+
+_NAMED = re.compile(r"(?<![:\w]):([A-Za-z_]\w*)")
+_JSON_EXTRACT = re.compile(r"json_extract\(([\w.]+),\s*'\$\.([\w.]+)'\)")
+
+
+@lru_cache(maxsize=1024)
+def pg_sql(sql: str) -> str:
+    """Translate the SQLite-style SQL used in this module into Postgres SQL."""
+    sql = sql.replace("%", "%%")
+    sql = _JSON_EXTRACT.sub(lambda m: f"({m.group(1)}::jsonb #>> '{{{m.group(2).replace('.', ',')}}}')", sql)
+    sql = _NAMED.sub(r"%(\1)s", sql)
+    return sql.replace("?", "%s")
+
+
+def pg_schema(sql: str) -> str:
+    return sql.replace(" COLLATE NOCASE", "").replace(" REAL", " DOUBLE PRECISION").replace(" BLOB", " BYTEA")
+
+
+class PostgresBackend:
+    """One connection per process (guarded by DB.lock), reconnected if the server dropped it.
+
+    prepare_threshold=None keeps it compatible with pooled URLs (PgBouncer / Neon "-pooler" hosts).
+    An optional schema keeps separate data sets (e.g. production / preview / tests) in one database.
+    """
+    dialect = "postgres"
+
+    def __init__(self, url: str, schema: str = ""):
+        try:
+            import psycopg
+        except ImportError as e:  # pragma: no cover - depends on the environment
+            raise RuntimeError("Postgres needs the psycopg package: pip install 'psycopg[binary]'") from e
+        self.psycopg, self.url = psycopg, url
+        if schema and not re.fullmatch(r"[a-z_][a-z0-9_]{0,62}", schema):
+            raise ValueError("RTS_DB_SCHEMA must be lowercase letters, digits and underscores")
+        self.schema = schema
+        self.conn = None
+        self._connect()
+
+    @staticmethod
+    def _row_factory(cursor):
+        keys = [c.name for c in cursor.description] if cursor.description else []
+        return lambda values: Row(keys, values)
+
+    def _connect(self):
+        self.conn = self.psycopg.connect(self.url, autocommit=True, prepare_threshold=None,
+                                         row_factory=self._row_factory, connect_timeout=15)
+        if self.schema:
+            self.conn.execute(f"CREATE SCHEMA IF NOT EXISTS {self.schema}")
+            self.conn.execute(f"SET search_path TO {self.schema}")
+
+    def _ready(self):
+        if self.conn is None or self.conn.closed or self.conn.broken:
+            self._connect()
+
+    @staticmethod
+    def _args(args):
+        """Booleans become 0/1: the schema stores flags as INTEGER (as SQLite does)."""
+        if isinstance(args, dict):
+            return {k: int(v) if isinstance(v, bool) else v for k, v in args.items()}
+        return [int(v) if isinstance(v, bool) else v for v in args] if args else None
+
+    def execute(self, sql: str, args=()):
+        self._ready()
+        args = self._args(args)
+        try:
+            return self.conn.execute(pg_sql(sql), args)
+        except self.psycopg.OperationalError:
+            if not self.conn.broken:          # a real error from the server, not a dropped connection
+                raise
+            self._connect()                   # idle connection was closed by the server: retry once
+            return self.conn.execute(pg_sql(sql), args)
+
+    def script(self, sql: str) -> None:
+        self._ready()
+        self.conn.execute(pg_schema(sql))
+
+    def add_column(self, table: str, col: str, decl: str) -> None:
+        self.execute(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {col} {decl}")
+
+    @contextmanager
+    def transaction(self):
+        self._ready()
+        with self.conn.transaction():
+            yield
+
+
+def is_postgres_url(target) -> bool:
+    return isinstance(target, str) and target.startswith(("postgres://", "postgresql://"))
+
+
+class DB:
+    def __init__(self, target, schema: str = ""):
+        """target: a SQLite file path, or a postgres:// URL."""
+        self.c = PostgresBackend(target, schema) if is_postgres_url(target) else SQLiteBackend(target)
+        self.dialect = self.c.dialect
         self.lock = threading.RLock()
         with self.lock:
-            self.conn.executescript(SCHEMA)
-            cols = {r[1] for r in self.conn.execute("PRAGMA table_info(runs)").fetchall()}
-            for col, decl in RUN_MIGRATIONS.items():          # upgrade databases created by v0.2
-                if col not in cols:
-                    self.conn.execute(f"ALTER TABLE runs ADD COLUMN {col} {decl}")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS runs_round ON runs(test_round_id)")
-            jcols = {r[1] for r in self.conn.execute("PRAGMA table_info(jobs)").fetchall()}
-            if "candidate_id" not in jcols:                     # v0.4: jobs belong to the candidate they were pasted for
-                self.conn.execute("ALTER TABLE jobs ADD COLUMN candidate_id TEXT REFERENCES candidates(id) ON DELETE SET NULL")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS jobs_candidate ON jobs(candidate_id)")
+            pg = self.dialect == "postgres"
+            if pg:   # serverless instances can start together; concurrent CREATE ... IF NOT EXISTS can clash
+                self.c.execute("SELECT pg_advisory_lock(7274110)")
+            try:
+                self.c.script(SCHEMA)
+                for table, col, decl in MIGRATIONS:              # upgrade databases created by earlier versions
+                    self.c.add_column(table, col, decl)
+                self.c.execute("CREATE INDEX IF NOT EXISTS runs_round ON runs(test_round_id)")
+                self.c.execute("CREATE INDEX IF NOT EXISTS jobs_candidate ON jobs(candidate_id)")
+                if pg:                                         # SQLite does this with COLLATE NOCASE
+                    self.c.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_email_ci ON users (lower(email))")
+            finally:
+                if pg:
+                    self.c.execute("SELECT pg_advisory_unlock(7274110)")
+
+    @contextmanager
+    def transaction(self):
+        with self.lock, self.c.transaction():
+            yield
 
     # ---------- low level ----------
     def _row(self, row) -> dict | None:
@@ -143,17 +318,17 @@ class DB:
 
     def _exec(self, sql, args=()):
         with self.lock:
-            return self.conn.execute(sql, args)
+            return self.c.execute(sql, args)
 
     # Reads run execute + fetch under one lock: worker threads share this connection, and fetching
     # after another thread has started a new statement can return the wrong row (or none).
     def _fetchone(self, sql, args=()):
         with self.lock:
-            return self.conn.execute(sql, args).fetchone()
+            return self.c.execute(sql, args).fetchone()
 
     def _fetchall(self, sql, args=()):
         with self.lock:
-            return self.conn.execute(sql, args).fetchall()
+            return self.c.execute(sql, args).fetchall()
 
     def _one(self, sql, args=()):
         return self._row(self._fetchone(sql, args))
@@ -182,7 +357,7 @@ class DB:
         return self._one(f"SELECT {self.USER_COLS} FROM users WHERE id=?", (uid,))
 
     def get_user_auth(self, email: str) -> dict | None:
-        return self._one("SELECT * FROM users WHERE email=?", (email.strip(),))
+        return self._one("SELECT * FROM users WHERE lower(email)=lower(?)", (email.strip(),))
 
     def list_users(self) -> list[dict]:
         users = self._all(f"SELECT {self.USER_COLS} FROM users ORDER BY role, created_at")
@@ -255,20 +430,20 @@ class DB:
 
     # ---------- assignments ----------
     def set_assignees(self, cid: str, user_ids: list[str]) -> None:
-        with self.lock:
-            self.conn.execute("DELETE FROM assignments WHERE candidate_id=?", (cid,))
+        with self.transaction():
+            self.c.execute("DELETE FROM assignments WHERE candidate_id=?", (cid,))
             for uid in set(user_ids):
-                self.conn.execute("INSERT INTO assignments VALUES (?,?)", (cid, uid))
+                self.c.execute("INSERT INTO assignments VALUES (?,?)", (cid, uid))
 
     def set_user_candidates(self, uid: str, candidate_ids: list[str]) -> None:
-        with self.lock:
-            self.conn.execute("DELETE FROM assignments WHERE user_id=?", (uid,))
+        with self.transaction():
+            self.c.execute("DELETE FROM assignments WHERE user_id=?", (uid,))
             for cid in set(candidate_ids):
-                if self.conn.execute("SELECT 1 FROM candidates WHERE id=?", (cid,)).fetchone():
-                    self.conn.execute("INSERT INTO assignments VALUES (?,?)", (cid, uid))
+                if self.c.execute("SELECT 1 FROM candidates WHERE id=?", (cid,)).fetchone():
+                    self.c.execute("INSERT INTO assignments VALUES (?,?)", (cid, uid))
 
     def assign(self, cid: str, uid: str) -> None:
-        self._exec("INSERT OR IGNORE INTO assignments VALUES (?,?)", (cid, uid))
+        self._exec("INSERT INTO assignments VALUES (?,?) ON CONFLICT DO NOTHING", (cid, uid))
 
     def assigned_candidate_ids(self, uid: str) -> set[str]:
         return {r[0] for r in self._fetchall("SELECT candidate_id FROM assignments WHERE user_id=?", (uid,))}
@@ -305,9 +480,9 @@ class DB:
 
     def list_candidates(self, only_ids: set[str] | None = None) -> list[dict]:
         if only_ids is None:
-            return self._all("SELECT * FROM candidates ORDER BY name COLLATE NOCASE")
+            return self._all("SELECT * FROM candidates ORDER BY lower(name)")
         clause, args = _in(only_ids)
-        return self._all(f"SELECT * FROM candidates WHERE id IN {clause} ORDER BY name COLLATE NOCASE", args)
+        return self._all(f"SELECT * FROM candidates WHERE id IN {clause} ORDER BY lower(name)", args)
 
     def delete_candidate(self, cid: str) -> list[dict]:
         runs = self._all("SELECT id FROM runs WHERE candidate_id=?", (cid,))
@@ -396,15 +571,38 @@ class DB:
         return self._all(sql, args)
 
     def claim_next_run(self) -> dict | None:
+        """Thread workers: take the oldest queued run."""
         with self.lock:
-            row = self.conn.execute("SELECT id FROM runs WHERE status='QUEUED' ORDER BY created_at LIMIT 1").fetchone()
-            if not row:
-                return None
-            cur = self.conn.execute("UPDATE runs SET status='RUNNING', started_at=? WHERE id=? AND status='QUEUED'",
-                                    (now(), row["id"]))
+            row = self.c.execute("SELECT id FROM runs WHERE status='QUEUED' ORDER BY created_at LIMIT 1").fetchone()
+            return self.claim_run(row["id"]) if row else None
+
+    def claim_run(self, rid: str, stale_before: str | None = None) -> dict | None:
+        """Mark one run RUNNING if it is still waiting (or, with stale_before, was abandoned mid-run).
+
+        The conditional UPDATE is atomic on both backends, so when a queue delivers the same message
+        twice, or two instances race, exactly one of them gets the run; the others get None.
+        """
+        cond = "status='QUEUED'"
+        args: list = [now(), rid]
+        if stale_before:
+            cond = "(status='QUEUED' OR (status='RUNNING' AND started_at<?))"
+            args.append(stale_before)
+        with self.lock:
+            cur = self.c.execute(f"UPDATE runs SET status='RUNNING', started_at=?, attempts=attempts+1 "
+                                 f"WHERE id=? AND {cond}", args)
             if cur.rowcount != 1:
                 return None
-            return self._row(self.conn.execute("SELECT * FROM runs WHERE id=?", (row["id"],)).fetchone())
+            return self._row(self.c.execute("SELECT * FROM runs WHERE id=?", (rid,)).fetchone())
+
+    def runs_to_dispatch(self, queued_before: str, running_before: str) -> list[dict]:
+        """Runs a queue may have lost: queued for a while, or RUNNING past the time limit."""
+        return self._all("SELECT id, status, attempts FROM runs WHERE (status='QUEUED' AND created_at<?) "
+                         "OR (status='RUNNING' AND started_at<?) ORDER BY created_at LIMIT 200",
+                         (queued_before, running_before))
+
+    def requeue_run(self, rid: str, running_before: str) -> bool:
+        return self._exec("UPDATE runs SET status='QUEUED', started_at=NULL WHERE id=? AND status='RUNNING' "
+                          "AND started_at<?", (rid, running_before)).rowcount == 1
 
     def finish_run(self, rid: str, **fields) -> None:
         fields["finished_at"] = now()
@@ -511,13 +709,13 @@ class DB:
 
     def create_prompt_version(self, files: dict, status: str, created_by: str | None, based_on: str | None,
                               note: str | None) -> dict:
-        with self.lock:
-            n = (self.conn.execute("SELECT MAX(number) FROM prompt_versions").fetchone()[0] or 0) + 1
+        with self.transaction():
+            n = (self.c.execute("SELECT MAX(number) FROM prompt_versions").fetchone()[0] or 0) + 1
             v = {"id": new_id("pv"), "number": n, "status": status, "based_on": based_on, "files": self._dump(files),
                  "note": note, "created_by": created_by, "created_at": now(), "updated_at": now(),
                  "published_at": now() if status == "ACTIVE" else None,
                  "published_by": created_by if status == "ACTIVE" else None}
-            self.conn.execute("""INSERT INTO prompt_versions VALUES (:id,:number,:status,:based_on,:files,:note,
+            self.c.execute("""INSERT INTO prompt_versions VALUES (:id,:number,:status,:based_on,:files,:note,
                                  :created_by,:created_at,:updated_at,:published_at,:published_by)""", v)
         return self.get_prompt_version(v["id"])
 
@@ -543,16 +741,10 @@ class DB:
         self._exec("UPDATE prompt_versions SET note=?, updated_at=? WHERE id=?", (note, now(), vid))
 
     def activate_prompt_version(self, vid: str, by: str) -> None:
-        with self.lock:
-            self.conn.execute("BEGIN IMMEDIATE")
-            try:
-                self.conn.execute("UPDATE prompt_versions SET status='ARCHIVED' WHERE status='ACTIVE'")
-                self.conn.execute("UPDATE prompt_versions SET status='ACTIVE', published_at=?, published_by=? WHERE id=?",
-                                  (now(), by, vid))
-                self.conn.execute("COMMIT")
-            except Exception:
-                self.conn.execute("ROLLBACK")
-                raise
+        with self.transaction():
+            self.c.execute("UPDATE prompt_versions SET status='ARCHIVED' WHERE status='ACTIVE'")
+            self.c.execute("UPDATE prompt_versions SET status='ACTIVE', published_at=?, published_by=? WHERE id=?",
+                           (now(), by, vid))
 
     def delete_prompt_version(self, vid: str) -> bool:
         return self._exec("DELETE FROM prompt_versions WHERE id=? AND status='DRAFT'", (vid,)).rowcount == 1
@@ -654,3 +846,30 @@ class DB:
 
     def candidate_run_renders(self, cid: str) -> list[dict]:
         return self._all("SELECT id, render FROM runs WHERE candidate_id=?", (cid,))
+
+    # ---------- generated files (used when files live in the database, e.g. on Vercel) ----------
+    def put_run_file(self, rid: str, name: str, data: bytes) -> None:
+        self._exec("INSERT INTO run_files (run_id, name, data, created_at) VALUES (?,?,?,?) "
+                   "ON CONFLICT(run_id, name) DO UPDATE SET data=excluded.data", (rid, name, data, now()))
+
+    def get_run_file(self, rid: str, name: str) -> bytes | None:
+        row = self._fetchone("SELECT data FROM run_files WHERE run_id=? AND name=?", (rid, name))
+        return bytes(row["data"]) if row else None
+
+    def delete_run_files(self, run_ids: list[str]) -> None:
+        if run_ids:
+            clause, ids = _in(run_ids)
+            self._exec(f"DELETE FROM run_files WHERE run_id IN {clause}", ids)
+
+    # ---------- sign-in throttle (shared by every instance) ----------
+    def login_failures(self, key: str, since: float) -> int:
+        return self._fetchone("SELECT COUNT(*) FROM login_failures WHERE key=? AND at>?", (key, since))[0]
+
+    def add_login_failure(self, key: str) -> None:
+        t = time.time()
+        self._exec("INSERT INTO login_failures (key, at) VALUES (?, ?)", (key, t))
+        if secrets.randbelow(50) == 0:                       # now and then, forget old attempts
+            self._exec("DELETE FROM login_failures WHERE at<?", (t - 86400,))
+
+    def clear_login_failures(self, key: str) -> None:
+        self._exec("DELETE FROM login_failures WHERE key=?", (key,))

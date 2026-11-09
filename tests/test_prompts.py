@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 from test_service import JOB, PW, STRONG, TITLE_ONLY, Client, free_port  # noqa: E402
 from service.api import create_app  # noqa: E402
 from service.config import Settings  # noqa: E402
+from support import ON_PG, make_db, make_settings  # noqa: E402
 from service.db import DB  # noqa: E402
 from service import prompts as pr  # noqa: E402
 
@@ -28,7 +29,7 @@ DRAFT = "prompts/02_draft.txt"
 @pytest.fixture(scope="module")
 def env(tmp_path_factory):
     tmp = tmp_path_factory.mktemp("rtsp")
-    settings = Settings(ai_provider="mock", db_path=tmp / "app.db", files_dir=tmp / "files", min_fit=40,
+    settings = make_settings(ai_provider="mock", db_path=tmp / "app.db", files_dir=tmp / "files", min_fit=40,
                         workers=3, mock_delay=0.02, make_pdf=False, timezone="America/New_York",
                         password_iterations=1000)
     app = create_app(settings)
@@ -232,6 +233,7 @@ def test_claude_proposer_wiring(monkeypatch):
     assert res["needs_code_change"] == ["Add a 'leadership' section"]
 
 
+@pytest.mark.skipif(ON_PG, reason="SQLite upgrade path")
 def test_upgrade_from_v02_database(tmp_path):
     path = tmp_path / "old.db"
     con = sqlite3.connect(path)
@@ -244,17 +246,17 @@ def test_upgrade_from_v02_database(tmp_path):
         usage TEXT, render TEXT, error TEXT, cost_usd REAL, seconds REAL, created_at TEXT NOT NULL, started_at TEXT, finished_at TEXT);""")
     con.close()
     db = DB(path)
-    cols = {r[1] for r in db.conn.execute("PRAGMA table_info(runs)")}
-    assert {"prompt_version_id", "purpose", "test_round_id"} <= cols
+    cols = db.c.columns("runs")
+    assert {"prompt_version_id", "purpose", "test_round_id", "attempts"} <= cols
 
 
 def test_concurrent_runs_across_versions(tmp_path):
     """Regression: worker threads share one DB connection; reads must not interleave."""
     from service.pipeline import ensure_prompt_versions
     from service.worker import WorkerPool
-    settings = Settings(ai_provider="mock", db_path=tmp_path / "s.db", files_dir=tmp_path / "f", min_fit=40,
+    settings = make_settings(ai_provider="mock", db_path=tmp_path / "s.db", files_dir=tmp_path / "f", min_fit=40,
                         workers=8, mock_delay=0.0, make_pdf=False)
-    db = DB(settings.db_path)
+    db = make_db(settings)
     ensure_prompt_versions(db)
     u = db.create_user("s@example.com", "S", "x", "ADMIN", [])
     v1 = db.active_prompt_version()

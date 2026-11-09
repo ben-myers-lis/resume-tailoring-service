@@ -11,7 +11,6 @@ from __future__ import annotations
 import hashlib
 import hmac
 import secrets
-import threading
 import time
 
 PERMISSIONS = {
@@ -46,27 +45,19 @@ def password_problem(password: str) -> str | None:
     return None
 
 
-# ---------- login throttling (in memory, per email+IP) ----------
+# ---------- login throttling (per email+IP, stored in the database so every instance sees it) ----------
 class LoginThrottle:
-    def __init__(self, max_attempts: int = 8, window_seconds: int = 900):
-        self.max, self.window = max_attempts, window_seconds
-        self.attempts: dict[str, list[float]] = {}
-        self.lock = threading.Lock()
+    def __init__(self, db, max_attempts: int = 8, window_seconds: int = 900):
+        self.db, self.max, self.window = db, max_attempts, window_seconds
 
     def blocked(self, key: str) -> bool:
-        with self.lock:
-            now = time.time()
-            recent = [t for t in self.attempts.get(key, []) if now - t < self.window]
-            self.attempts[key] = recent
-            return len(recent) >= self.max
+        return self.db.login_failures(key, time.time() - self.window) >= self.max
 
     def fail(self, key: str) -> None:
-        with self.lock:
-            self.attempts.setdefault(key, []).append(time.time())
+        self.db.add_login_failure(key)
 
     def reset(self, key: str) -> None:
-        with self.lock:
-            self.attempts.pop(key, None)
+        self.db.clear_login_failures(key)
 
 
 # ---------- access ----------

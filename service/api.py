@@ -25,7 +25,7 @@ from starlette.staticfiles import StaticFiles
 from . import stats as st
 from .auth import PERMISSIONS, Actor, LoginThrottle, hash_password, password_problem, verify_password
 from . import drive_service as ds
-from .config import Settings, get_settings, public_url
+from .config import ON_VERCEL, Settings, db_target, get_settings, public_url
 from starlette.responses import RedirectResponse
 from .db import APP_STATUSES, DB
 from .pipeline import delete_run_files
@@ -39,7 +39,8 @@ from .schemas import (AcceptInviteIn, ApplicationIn, ApplicationUpdateIn, ApplyP
 from starlette.concurrency import run_in_threadpool
 from .jd import guess_title_company
 from .screening import screen
-from .worker import WorkerPool
+from .jobs import make_dispatcher
+from . import storage
 
 log = logging.getLogger("rts.api")
 WEB_DIR = Path(__file__).resolve().parent / "web"
@@ -55,10 +56,10 @@ class HTTPError(Exception):
 
 def create_app(settings: Settings | None = None, start_workers: bool = True) -> Starlette:
     settings = settings or get_settings()
-    db = DB(settings.db_path)
+    db = DB(db_target(settings), settings.db_schema)
     ensure_prompt_versions(db)
-    pool = WorkerPool(db, settings)
-    throttle = LoginThrottle()
+    dispatcher = make_dispatcher(db, settings)
+    throttle = LoginThrottle(db)
 
     # ================= helpers =================
     def actor(request: Request) -> Actor:
@@ -131,12 +132,30 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
         resp.set_cookie(COOKIE, token, max_age=14 * 86400, httponly=True, samesite="lax",
                         secure=settings.secure_cookies, path="/")
 
+    def client_ip(request: Request) -> str:
+        if ON_VERCEL:                         # set by Vercel's edge, which overwrites any value a client sends
+            h = request.headers
+            return (h.get("x-vercel-forwarded-for") or h.get("x-forwarded-for") or h.get("x-real-ip") or "").split(",")[0].strip()
+        return request.client.host if request.client else ""
+
     def ok(data, status=200):
         return JSONResponse(data, status_code=status)
 
+    async def queue_runs(run_ids: list[str]):
+        """Hand newly created runs to the dispatcher (a network call with Vercel Queues)."""
+        await run_in_threadpool(dispatcher.enqueue, run_ids)
+
     # ================= public =================
     async def health(request):
-        return ok({"ok": True, "provider": settings.ai_provider, "workers": settings.workers})
+        return ok({"ok": True, "provider": settings.ai_provider, "workers": settings.workers,
+                   "queue": dispatcher.name, "database": db.dialect, "files": settings.file_store})
+
+    async def cron_sweep(request):
+        """Vercel Cron calls this with "Authorization: Bearer <CRON_SECRET>"."""
+        sent = request.headers.get("authorization", "")
+        if not settings.cron_secret or not hmac.compare_digest(sent, f"Bearer {settings.cron_secret}"):
+            raise HTTPError(401, "Unauthorized")
+        return ok(await run_in_threadpool(dispatcher.sweep))
 
     async def auth_state(request):
         user = None
@@ -163,7 +182,7 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
 
     async def auth_login(request):
         data = await body(request, LoginIn)
-        key = f"{data.email.strip().lower()}|{request.client.host if request.client else ''}"
+        key = f"{data.email.strip().lower()}|{client_ip(request)}"
         if throttle.blocked(key):
             raise HTTPError(429, "Too many attempts. Please wait 15 minutes and try again.")
         u = db.get_user_auth(data.email)
@@ -240,6 +259,7 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
     # ================= dashboard =================
     async def dashboard(request):
         a = actor(request)
+        await run_in_threadpool(dispatcher.maybe_sweep)
         ids = a.visible_candidate_ids
         d = st.dashboard(db, ids, settings.timezone)
         names = {u["id"]: u["name"] for u in db.list_users()}
@@ -285,7 +305,7 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
             admin_only(a)
             await run_in_threadpool(ds.trash_candidate, db, settings, cid)
             runs = db.delete_candidate(cid)
-            delete_run_files(settings, runs)
+            delete_run_files(db, settings, runs)
             return ok({"deleted": cid, "runs_deleted": len(runs)})
         return ok(candidate_out(c, st.summary_counts(db, {cid}, settings.timezone)))
 
@@ -337,7 +357,7 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
             if not (a.is_admin or (j["created_by"] == a.id and a.can("resumes.tailor"))):
                 raise HTTPError(403, "Only the administrator or the person who added this job can delete it")
             runs = db.delete_job(j["id"])
-            delete_run_files(settings, runs)
+            delete_run_files(db, settings, runs)
             return ok({"deleted": j["id"], "runs_deleted": len(runs)})
         if request.method == "PATCH":
             require(a, "resumes.tailor")
@@ -357,6 +377,7 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
                                    "company": (data.company or "").strip() or g_company,
                                    "url": (data.url or "").strip() or None, "text": text}, candidate_id=c["id"])
         run = db.create_run(a.id, c["id"], job["id"], data.force, "APPLICATION")
+        await queue_runs([run["id"]])
         return ok({"run": run, "job": job, "detected": {"title": g_title, "company": g_company}}, 202)
 
     # ================= screening & runs =================
@@ -377,7 +398,10 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
             check_mode(r.mode)
             candidate_for(a, r.candidate_id)
             job_for(a, r.job_id)
-            return ok(db.create_run(a.id, r.candidate_id, r.job_id, r.force, r.mode), 202)
+            created = db.create_run(a.id, r.candidate_id, r.job_id, r.force, r.mode)
+            await queue_runs([created["id"]])
+            return ok(created, 202)
+        await run_in_threadpool(dispatcher.maybe_sweep)
         q = request.query_params
         cid = q.get("candidate_id")
         if cid:
@@ -395,11 +419,14 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
         for jid in b.job_ids:
             job_for(a, jid)
         created = [db.create_run(a.id, c, j, b.force, b.mode)["id"] for c in b.candidate_ids for j in b.job_ids]
+        await queue_runs(created)
         return ok({"queued": len(created), "run_ids": created}, 202)
 
     async def run(request):
         a = actor(request)
         r = run_for(a, request.path_params["id"])
+        if r["status"] in ("QUEUED", "RUNNING"):
+            await run_in_threadpool(dispatcher.maybe_sweep)      # someone is waiting on this run
         result = r.pop("result", None) or {}
         r.pop("usage", None)
         r["resume_markdown"] = result.get("resume_markdown")
@@ -430,11 +457,13 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
         r = run_for(a, request.path_params["id"])
         ext = request.path_params["ext"]
         name = ((r.get("render") or {}).get("files") or {}).get(ext)
-        path = settings.files_dir / r["id"] / name if name else None
-        if not path or not path.exists():
+        data = await run_in_threadpool(storage.read_run_file, db, settings, r["id"], name) if name else None
+        if data is None or ext not in MEDIA:
             raise HTTPError(404, f"No {ext} file for this run")
         stem = "".join(ch if ch.isalnum() else "_" for ch in f"{r['candidate_name']} {r['job_company'] or ''}").strip("_")
-        return FileResponse(path, media_type=MEDIA[ext], filename=f"{stem}_resume.{ext}")
+        return Response(data, media_type=MEDIA[ext], headers={
+            "Content-Disposition": f"attachment; filename=\"{stem}_resume.{ext}\"; filename*=UTF-8''{quote(stem)}_resume.{ext}",
+            "Cache-Control": "private, no-store"})
 
     # ================= applications =================
     async def applications(request):
@@ -717,10 +746,12 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
         active = db.active_prompt_version(meta_only=True)
         compare_id = active["id"] if data.compare and active and active["id"] != v["id"] else None
         rnd = db.create_test_round(v["id"], compare_id, pr.content_hash(v["files"]), [c["id"] for c in cases], a.id)
+        created = []
         for c in cases:
             for vid in [v["id"]] + ([compare_id] if compare_id else []):
-                db.create_run(a.id, c["candidate_id"], c["job_id"], True, "APPLICATION",
-                              prompt_version_id=vid, purpose="TEST", test_round_id=rnd["id"])
+                created.append(db.create_run(a.id, c["candidate_id"], c["job_id"], True, "APPLICATION",
+                                             prompt_version_id=vid, purpose="TEST", test_round_id=rnd["id"])["id"])
+        await queue_runs(created)
         return ok(round_view(a, rnd), 202)
 
     async def test_round(request):
@@ -845,10 +876,10 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
     @contextlib.asynccontextmanager
     async def lifespan(app):
         if start_workers:
-            pool.start()
+            dispatcher.start()
         yield
         if start_workers:
-            pool.stop()
+            dispatcher.stop()
 
     R = Route
     app = Starlette(
@@ -856,6 +887,7 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
             R("/", index),
             Mount("/static", StaticFiles(directory=WEB_DIR / "static"), name="static"),
             R("/api/health", health),
+            R("/api/cron/sweep", cron_sweep),
             R("/api/auth/state", auth_state),
             R("/api/auth/setup", auth_setup, methods=["POST"]),
             R("/api/auth/login", auth_login, methods=["POST"]),
@@ -908,5 +940,5 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
         exception_handlers={HTTPError: on_error},
         lifespan=lifespan,
     )
-    app.state.db, app.state.settings, app.state.pool = db, settings, pool
+    app.state.db, app.state.settings, app.state.dispatcher = db, settings, dispatcher
     return app

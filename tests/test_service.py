@@ -21,7 +21,9 @@ sys.path.insert(0, str(ROOT))
 
 from service.api import create_app  # noqa: E402
 from service.config import Settings  # noqa: E402
+from support import ON_PG, make_db, make_settings  # noqa: E402
 from service.db import DB  # noqa: E402
+from service import storage  # noqa: E402
 from service.stats import today, week_start  # noqa: E402
 
 PW = "Str0ngPassword"
@@ -101,7 +103,7 @@ class Client:
 @pytest.fixture(scope="module")
 def env(tmp_path_factory):
     tmp = tmp_path_factory.mktemp("rts")
-    settings = Settings(ai_provider="mock", db_path=tmp / "app.db", files_dir=tmp / "files", min_fit=40,
+    settings = make_settings(ai_provider="mock", db_path=tmp / "app.db", files_dir=tmp / "files", min_fit=40,
                         workers=3, mock_delay=0.05, make_pdf=True, allow_illustrative=False,
                         timezone=TZ, password_iterations=1000)
     app = create_app(settings)
@@ -135,7 +137,7 @@ def env(tmp_path_factory):
     assert code == 201 and acc["user"]["role"] == "MEMBER"
     ids["member"] = acc["user"]["id"]
 
-    yield {"base": base, "admin": admin, "member": member, "ids": ids, "settings": settings}
+    yield {"base": base, "admin": admin, "member": member, "ids": ids, "settings": settings, "app": app}
     srv.should_exit = True
     t.join(10)
 
@@ -343,10 +345,12 @@ def test_delete_candidate_cascades(env):
     _, run = a.call("POST", "/api/runs", {"candidate_id": c["id"], "job_id": env["ids"]["job"]})
     a.wait(run["id"])
     a.call("POST", "/api/applications", {"candidate_id": c["id"], "run_id": run["id"]})
-    folder = s.files_dir / run["id"]
-    assert folder.exists()
+    db = env["app"].state.db
+    assert storage.read_run_file(db, s, run["id"], "resume.docx")
     code, res = a.call("DELETE", f"/api/candidates/{c['id']}")
-    assert code == 200 and res["runs_deleted"] == 1 and not folder.exists()
+    assert code == 200 and res["runs_deleted"] == 1
+    assert storage.read_run_file(db, s, run["id"], "resume.docx") is None
+    assert not (s.files_dir / run["id"]).exists()
     assert a.call("GET", f"/api/runs/{run['id']}")[0] == 404
     _, apps = a.call("GET", "/api/applications")
     assert all(x["candidate_id"] != c["id"] for x in apps)
@@ -398,9 +402,9 @@ def test_claude_provider_wiring(tmp_path, monkeypatch):
 
     monkeypatch.setattr(claude_mod, "_client",
                         lambda: types.SimpleNamespace(messages=types.SimpleNamespace(stream=lambda **kw: Stream(kw))))
-    settings = Settings(ai_provider="claude", db_path=tmp_path / "c.db", files_dir=tmp_path / "f",
+    settings = make_settings(ai_provider="claude", db_path=tmp_path / "c.db", files_dir=tmp_path / "f",
                         min_fit=40, workers=1, make_pdf=False)
-    db = DB(settings.db_path)
+    db = make_db(settings)
     u = db.create_user("c@example.com", "C", "x", "ADMIN", [])
     cand = db.create_candidate(u["id"], STRONG)
     job = db.create_job(u["id"], JOB)
@@ -492,7 +496,7 @@ def test_screening_reads_field_from_text_when_title_unknown():
 def test_setup_code_required_when_configured(tmp_path):
     """On a public server, RTS_SETUP_CODE stops strangers from claiming the administrator account."""
     port = free_port()
-    settings = Settings(ai_provider="mock", db_path=tmp_path / "s.db", files_dir=tmp_path / "f", make_pdf=False,
+    settings = make_settings(ai_provider="mock", db_path=tmp_path / "s.db", files_dir=tmp_path / "f", make_pdf=False,
                         password_iterations=1000, setup_code="let-me-in-123")
     srv = uvicorn.Server(uvicorn.Config(create_app(settings, start_workers=False), host="127.0.0.1", port=port, log_level="warning"))
     t = threading.Thread(target=srv.run, daemon=True)

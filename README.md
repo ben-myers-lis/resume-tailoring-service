@@ -17,12 +17,13 @@ Drive sign-in returns to that exact address.
 
 ## Start it on your computer
 
-Needs **Python 3.10+**. For PDF output, also install **LibreOffice** (free); without it you still get Word files.
+Needs **Python 3.12+**. PDFs work out of the box (ReportLab); if **LibreOffice** is installed, it's used instead
+for an exact copy of the Word file's layout.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r requirements-dev.txt   # app + test tools
 cp .env.example .env                 # optional settings
 python run.py
 ```
@@ -153,13 +154,20 @@ With title-only profiles, resumes contain the summary, titles, companies, dates 
 | `RTS_MIN_FIT` | `40` | Skip tailoring below this fit score (only clear mismatches) |
 | `RTS_WORKERS` | `4` | Resumes processed at the same time |
 | `RTS_TIMEZONE` | `America/New_York` | For "today" and "this week" |
-| `RTS_PDF` | `1` | Also make PDFs and check page count (needs LibreOffice) |
+| `RTS_PDF` | `1` | Also make PDFs and check page count |
+| `RTS_PDF_ENGINE` | `auto` | `libreoffice` (exact copy of the Word file), `reportlab` (no system packages; used on Vercel), or `auto` (LibreOffice if installed) |
 | `RTS_SECURE_COOKIES` | `0` | Set to `1` when the site runs on HTTPS |
 | `RTS_ALLOW_ILLUSTRATIVE` | `0` | Keep off: illustrative mode generates example content |
 | `RTS_PROMPT_MODEL` | `claude-opus-5-5` | Model for "Improve with AI" proposals |
 | `RTS_GOOGLE_CLIENT_ID`, `RTS_GOOGLE_CLIENT_SECRET` | | Google Drive connection (see above) |
 | `RTS_PUBLIC_URL` | `http://localhost:8000` | The address people use to open the app (set it when hosting online) |
 | `RTS_PORT` | `8000` | Web address port |
+| `RTS_DATABASE_URL` (or `DATABASE_URL`) | | A Postgres URL. Empty = SQLite file `RTS_DB`. Required on Vercel |
+| `RTS_DB_SCHEMA` | | Optional Postgres schema, to keep separate data sets (e.g. `preview`) in one database |
+| `RTS_FILE_STORE` | `local` (`db` with Postgres) | Where generated resumes are kept: a folder (`RTS_FILES`) or the database |
+| `RTS_QUEUE` | `threads` (`vercel` on Vercel) | Who processes runs: worker threads in the app, or Vercel Queues |
+| `RTS_RUN_TIMEOUT` / `RTS_MAX_ATTEMPTS` | `900` / `2` | A run still RUNNING after this many seconds is retried, up to this many tries |
+| `CRON_SECRET` | | Protects `/api/cron/sweep` (Vercel sends it automatically) |
 
 ## Admin commands
 
@@ -184,17 +192,20 @@ Candidate names and contact details are not sent to Claude; they're added back w
 | `service/web/` | The web app (HTML, CSS, JavaScript; no build step) |
 | `service/api.py` | All routes, with sign-in and permission checks |
 | `service/auth.py` | Passwords, permissions, access rules |
-| `service/db.py` | Database (SQLite) |
+| `service/db.py` | Database (SQLite or Postgres, same queries) |
+| `service/jobs.py`, `rts_worker.py` | Run dispatch: worker threads, or Vercel Queues + its subscriber |
+| `service/storage.py` | Generated files on disk or in the database |
+| `main.py`, `pyproject.toml`, `vercel.json` | Vercel entry point and configuration |
 | `service/stats.py` | Per-day / per-week application counts |
 | `service/jd.py` | Job title / company detection from pasted text |
 | `service/gdrive.py`, `drive_service.py` | Google Drive connection and uploads |
 | `service/prompts.py`, `prompt_ai.py` | Prompt versions, checks, diffs, AI proposals |
 | `service/screening.py` | Fit screening for title-only profiles |
 | `service/pipeline.py`, `worker.py` | Background tailoring queue |
-| `service/render.py` | Word/PDF output and page-count check |
+| `service/render.py`, `service/fonts/` | Word/PDF output (LibreOffice or ReportLab with the Carlito font, OFL) and page-count check |
 | `service/ai/` | Mock AI and Claude provider |
 | `prompt_package/` | Your v1 prompt package (becomes Prompt Studio version 1 on first start) plus the Claude adapter |
-| `tests/` | 47 end-to-end tests, including a simulated Google Drive (`python -m pytest -q tests`) |
+| `tests/` | End-to-end tests, including a simulated Google Drive and Vercel Queues (`python -m pytest -q tests`; set `RTS_TEST_DATABASE_URL` to run them on Postgres) |
 
 ## Security notes
 
@@ -204,7 +215,8 @@ existence of candidates that aren't assigned to them.
 
 ## Deploying
 
-See **[DEPLOY.md](DEPLOY.md)**: Docker image, hosting options, settings, Google Drive on the live site, backups.
+See **[DEPLOY.md](DEPLOY.md)**: Vercel (serverless, with Postgres and Vercel Queues) or any Docker host,
+settings, Google Drive on the live site, backups.
 
 ## Before going online
 

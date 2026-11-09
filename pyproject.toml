@@ -1,0 +1,25 @@
+# Used by Vercel to build the app. Local, Docker and CI installs use requirements.txt.
+[project]
+name = "resume-tailoring-service"
+version = "0.6.0"
+requires-python = ">=3.12"
+dependencies = [
+    "starlette>=0.40",
+    "uvicorn>=0.30",
+    "pydantic>=2.6",
+    "jsonschema>=4.21",
+    "python-docx>=1.1",
+    "pypdf>=4.0",
+    "reportlab>=4.0",
+    "psycopg[binary]>=3.2",
+    "vercel-queue>=0.7",
+    "anthropic>=0.40",
+]
+
+[tool.vercel]
+# The web app (every page and /api route).
+entrypoint = "main:app"
+
+# Background tailoring: Vercel builds rts_worker.py into a private, queue-triggered function.
+[[tool.vercel.subscribers]]
+entrypoint = "rts_worker"

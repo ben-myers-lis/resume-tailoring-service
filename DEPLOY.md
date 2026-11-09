@@ -1,7 +1,13 @@
 # Deploying Resume Tailoring
 
-The app is one Docker container with a **persistent data folder** (`/app/data`: the database, generated
-resumes and Prompt Studio history). Any host that runs Docker containers with a persistent disk works.
+There are two ways to run the app online:
+
+- **Vercel** (section 3c): serverless. Data lives in a Postgres database, tailoring runs through
+  Vercel Queues, and PDFs are drawn with ReportLab. Nothing to keep running or patch.
+- **A Docker host** (sections 3a, 3b): one container with a **persistent data folder** (`/app/data`:
+  the SQLite database, generated resumes and Prompt Studio history).
+
+The same code runs both ways; settings decide which (see the table in README).
 
 > **Before you start:** make the GitHub repository **private** (Settings → General → Danger Zone →
 > Change visibility). It contains your prompt set and business logic.
@@ -14,8 +20,10 @@ resumes and Prompt Studio history). Any host that runs Docker containers with a 
 | **Railway** (service + Volume) | Low | Usage-based | Deploys from GitHub; HTTPS included |
 | **Fly.io** (app + Volume) | Medium | Usage-based | Command-line setup; HTTPS included |
 | **Your own server / VM** (DigitalOcean, Lightsail, Hetzner…) | Medium–high | Fixed monthly server | `docker compose` + an HTTPS proxy (Caddy); you handle updates and backups |
+| **Vercel** (Pro) + Neon Postgres | Low | Pro plan + usage, plus the database | Deploys from GitHub; preview site for every pull request; see 3c |
 
-For an app this size, expect a small monthly bill on any of these; check each provider's current pricing. Whatever you choose:
+For an app this size, expect a small monthly bill on any of these; check each provider's current pricing.
+For a **Docker host** (not Vercel):
 - Run **exactly one instance** (the job queue and SQLite database live inside the container).
   Process more resumes at once with `RTS_WORKERS`, not more instances.
 - Attach a **persistent disk/volume mounted at `/app/data`**. Without it, everything is lost on redeploy.
@@ -67,6 +75,52 @@ resumes.yourcompany.com {
 
 `sudo systemctl reload caddy`. Update later with `git pull && docker compose up -d --build`.
 
+## 3c. Vercel
+
+**Plan:** use **Pro**. The free Hobby plan is for non-commercial personal use only, and it stops any
+function after 5 minutes, while a real Claude tailoring run currently takes 3–6 minutes. (With the mock AI,
+Hobby is fine for a trial.)
+
+1. **Import the repo.** Vercel dashboard → **Add New → Project** → import `resume-tailoring-service`.
+   Keep the defaults (no build command); Vercel reads `pyproject.toml` and `vercel.json`. The
+   `Dockerfile` is ignored (`.vercelignore`).
+2. **Add the database.** In the project: **Storage → Create Database → Neon (Postgres)** → connect it to
+   the project. This sets `DATABASE_URL`; the app creates its tables on first start.
+3. **Environment variables** (Settings → Environment Variables, for Production):
+
+   | Variable | Value |
+   |---|---|
+   | `RTS_SETUP_CODE` | A long random value (needed once to create the administrator) |
+   | `CRON_SECRET` | A random value of 16+ characters (protects the daily clean-up job) |
+   | `RTS_AI_PROVIDER` / `ANTHROPIC_API_KEY` | `claude` and your key (or `mock` to try it first) |
+   | `RTS_PUBLIC_URL` | Your domain once you add one, e.g. `https://resumes.yourcompany.com`. Until then it defaults to the project's `…vercel.app` address |
+   | `RTS_GOOGLE_CLIENT_ID` / `RTS_GOOGLE_CLIENT_SECRET` | If you use Google Drive |
+   | `RTS_WORKERS` | Resumes processed at once (default 4); keep within your Anthropic rate limits |
+
+   Not needed on Vercel: `RTS_SECURE_COOKIES`, `RTS_FORWARDED_ALLOW_IPS`, `RTS_DB`, `RTS_FILES`, `RTS_PORT`.
+4. **Time limit.** Settings → **Functions** → Advanced Settings → **Function Max Duration** → `800` → Save.
+   This applies to the queue function that does the tailoring. (`vercel.json` keeps web requests at 300 s.)
+5. **Deploy**, then open `https://<your-app>/api/health`. It should show
+   `"queue": "vercel", "database": "postgres", "files": "db"`.
+6. Continue with **First start** (section 4) and **Google Drive** (section 5).
+
+**How it works on Vercel**
+- Creating a run saves it in Postgres and sends a message to **Vercel Queues** (topic `rts-runs`).
+  Vercel calls `rts_worker.py` (a private function built from `pyproject.toml`) once per run.
+- Word and PDF files are stored in the database (they're small), so any instance can serve a download.
+- Safety net: a run whose message was lost is re-sent after 2 minutes; a run stopped by the time limit is
+  retried after `RTS_RUN_TIMEOUT` (15 min) and marked FAILED after `RTS_MAX_ATTEMPTS` (2) tries. This check runs
+  when someone opens the dashboard or a run page, and once a day from the cron job in `vercel.json`. On Pro
+  you can make the cron more frequent (e.g. `*/10 * * * *`).
+- **Preview deployments** (one per pull request) are separate sites. If they share the production
+  database, set `RTS_DB_SCHEMA=preview` for the **Preview** environment so they use their own tables
+  (or turn on Neon's preview branching when connecting the database).
+- Vercel Queues' Python SDK is in **beta**. If you ever need to move off Vercel, the same code runs on a
+  Docker host (3a/3b), and can keep using the Postgres database by setting `RTS_DATABASE_URL`.
+
+**Backups:** Neon keeps point-in-time history (its length depends on the Neon plan); check it in the Neon
+console. Resumes uploaded to Google Drive are also kept there.
+
 ## 4. First start
 
 1. Open your HTTPS address, enter the **setup code**, and create your administrator account.
@@ -81,7 +135,7 @@ Then Settings → **Connect Google Drive** in the app. Make sure the consent scr
 
 ## 6. Backups
 
-Everything important is in `/app/data`. Back it up daily:
+On a Docker host, everything important is in `/app/data`. Back it up daily:
 - **Managed hosts:** enable disk snapshots/backups in the dashboard if offered.
 - **Own server:** e.g. a nightly cron job:
   ```bash
@@ -99,8 +153,10 @@ After you merge into `main`: managed hosts redeploy automatically; on your own s
 ## Checklist
 
 - [ ] Repository is private
-- [ ] One instance, persistent volume at `/app/data`, ≥ 1 GB RAM
-- [ ] `RTS_PUBLIC_URL` (https), `RTS_SECURE_COOKIES=1`, `RTS_FORWARDED_ALLOW_IPS=*`, `RTS_SETUP_CODE`
+- [ ] Docker host: one instance, persistent volume at `/app/data`, ≥ 1 GB RAM;
+      `RTS_PUBLIC_URL` (https), `RTS_SECURE_COOKIES=1`, `RTS_FORWARDED_ALLOW_IPS=*`, `RTS_SETUP_CODE`
+- [ ] Vercel: Pro plan, Neon database connected, `RTS_SETUP_CODE`, `CRON_SECRET`, Function Max Duration 800,
+      `/api/health` shows `vercel` / `postgres` / `db`
 - [ ] Administrator account created
 - [ ] Claude API key set and spend limit configured
 - [ ] Google redirect URI added for the live address; Drive connected

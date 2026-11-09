@@ -6,6 +6,7 @@ import re
 import threading
 from datetime import datetime, timezone
 
+from . import storage
 from .config import Settings, public_url
 from .db import DB
 from .gdrive import Drive, DriveConfig, DriveError, urllib_transport
@@ -89,7 +90,9 @@ def upload_run(db: DB, settings: Settings, run_id: str) -> dict | None:
         uploaded = {}
         stem = "_".join(x for x in (_safe(candidate["name"]), _safe(run["job_company"]), _safe(run["job_role"])) if x)
         for fmt in wanted:
-            data = (settings.files_dir / run_id / files[fmt]).read_bytes()
+            data = storage.read_run_file(db, settings, run_id, files[fmt])
+            if data is None:
+                raise FileNotFoundError(f"The {fmt} file for this run is missing")
             meta = drive.upload(data, f"{stem}.{fmt}", MIME[fmt], folder)
             if opts["share_mode"] == "anyone":
                 drive.share_anyone(meta["id"])

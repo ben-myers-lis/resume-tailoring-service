@@ -1,9 +1,11 @@
+# Runtime packages. Keep in step with [project].dependencies in pyproject.toml (a test checks this).
 starlette>=0.40
 uvicorn>=0.30
 pydantic>=2.6
 jsonschema>=4.21
 python-docx>=1.1
 pypdf>=4.0
-pytest>=8.0
-# Only needed when RTS_AI_PROVIDER=claude:
+reportlab>=4.0
+psycopg[binary]>=3.2
+vercel-queue>=0.7
 anthropic>=0.40

@@ -21,6 +21,7 @@ from test_service import PW, STRONG, Client, free_port  # noqa: E402
 from service import drive_service, gdrive  # noqa: E402
 from service.api import create_app  # noqa: E402
 from service.config import Settings  # noqa: E402
+from support import ON_PG, make_db, make_settings  # noqa: E402
 
 JD = """Senior Machine Learning Engineer
 Lumen Health AI
@@ -115,7 +116,7 @@ def env(tmp_path_factory):
     fake = FakeGoogle()
     drive_service.TRANSPORT = fake
     port = free_port()
-    settings = Settings(ai_provider="mock", db_path=tmp / "app.db", files_dir=tmp / "files", min_fit=40, workers=2,
+    settings = make_settings(ai_provider="mock", db_path=tmp / "app.db", files_dir=tmp / "files", min_fit=40, workers=2,
                         mock_delay=0.02, make_pdf=True, password_iterations=1000, timezone="America/New_York",
                         google_client_id="cid.apps.googleusercontent.com", google_client_secret="secret",
                         port=port, public_url=f"http://127.0.0.1:{port}")

@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import logging
-import shutil
+import tempfile
 import time
 import traceback
+from pathlib import Path
 
 from .ai import make_generator
 from .config import Settings
@@ -13,6 +14,7 @@ from .package import PACKAGE_VERSION, build_request, runner
 from .render import render_files
 from .prompts import VersionedGenerator
 from .screening import screen
+from . import storage
 
 log = logging.getLogger("rts.pipeline")
 
@@ -45,8 +47,12 @@ def process_run(db: DB, settings: Settings, run: dict) -> None:
         request = build_request(run_id=rid, candidate=candidate, job=job, mode=run["mode"],
                                 max_repair_rounds=settings.max_repair_rounds)
         result = runner.run_pipeline(request, generator)
-        out_dir = settings.files_dir / rid
-        render = render_files(request, result, out_dir, make_pdf=settings.make_pdf)
+        if settings.file_store == "db":
+            out_dir = Path(tempfile.mkdtemp(prefix=f"{rid}_"))
+        else:
+            out_dir = settings.files_dir / rid
+        render = render_files(request, result, out_dir, make_pdf=settings.make_pdf, pdf_engine=settings.pdf_engine)
+        storage.store_run_files(db, settings, rid, out_dir, render)
         usage = generator.usage_report()
         db.finish_run(rid, status="DONE", fit_score=fit["fit_score"], fit=fit,
                       delivery_status=result["delivery_status"], result=_slim(result), usage=usage,
@@ -75,10 +81,14 @@ def ensure_prompt_versions(db: DB) -> None:
     """First start: the prompt package on disk becomes version 1 (active)."""
     if db.count_prompt_versions() == 0:
         from .prompts import package_files
-        db.create_prompt_version(package_files(), "ACTIVE", None, None,
-                                 "Initial version from Resume_Tailoring_Portable_v1")
+        try:
+            db.create_prompt_version(package_files(), "ACTIVE", None, None,
+                                     "Initial version from Resume_Tailoring_Portable_v1")
+        except Exception:
+            # Two instances starting at once (serverless): the other one created version 1 first.
+            if db.count_prompt_versions() == 0:
+                raise
 
 
-def delete_run_files(settings: Settings, runs: list[dict]) -> None:
-    for r in runs:
-        shutil.rmtree(settings.files_dir / r["id"], ignore_errors=True)
+def delete_run_files(db: DB, settings: Settings, runs: list[dict]) -> None:
+    storage.delete_run_files(db, settings, runs)
