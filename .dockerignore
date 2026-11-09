@@ -1,0 +1,13 @@
+.git
+.github
+.venv
+.env
+.env.*
+!.env.example
+!.env.production.example
+data
+**/__pycache__
+.pytest_cache
+*.zip
+*.db
+*.db-*

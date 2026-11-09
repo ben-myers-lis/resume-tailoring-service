@@ -8,6 +8,7 @@ Every route checks: signed in -> permission (if any) -> candidate visibility (me
 from __future__ import annotations
 
 import contextlib
+import hmac
 import logging
 from datetime import date, datetime, time, timezone
 from urllib.parse import quote, urlparse
@@ -143,12 +144,14 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
             user = me_payload(actor(request))
         except HTTPError:
             pass
-        return ok({"needs_setup": db.count_users() == 0, "user": user})
+        return ok({"needs_setup": db.count_users() == 0, "setup_code_required": bool(settings.setup_code), "user": user})
 
     async def auth_setup(request):
         data = await body(request, SetupIn)
         if db.count_users() > 0:
             raise HTTPError(409, "Setup is already complete. Please sign in.")
+        if settings.setup_code and not hmac.compare_digest((data.setup_code or "").strip(), settings.setup_code):
+            raise HTTPError(403, "The setup code is incorrect.", [{"field": "setup_code", "error": "Incorrect setup code"}])
         if problem := password_problem(data.password):
             raise HTTPError(422, problem, [{"field": "password", "error": problem}])
         u = db.create_user(data.email, data.name, hash_password(data.password, settings.password_iterations),

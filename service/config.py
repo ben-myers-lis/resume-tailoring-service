@@ -43,7 +43,9 @@ class Settings:
     google_client_secret: str = os.environ.get("RTS_GOOGLE_CLIENT_SECRET", "")
     public_url: str = os.environ.get("RTS_PUBLIC_URL", "")      # e.g. https://resumes.example.com
     host: str = os.environ.get("RTS_HOST", "127.0.0.1")
-    port: int = int(os.environ.get("RTS_PORT", "8000"))
+    port: int = int(os.environ.get("RTS_PORT") or os.environ.get("PORT") or "8000")   # PORT: set by most hosts
+    setup_code: str = os.environ.get("RTS_SETUP_CODE", "")          # required to create the first admin, if set
+    forwarded_allow_ips: str = os.environ.get("RTS_FORWARDED_ALLOW_IPS", "127.0.0.1")  # "*" behind a host's proxy
 
 
 def get_settings() -> Settings:

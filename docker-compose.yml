@@ -1,0 +1,19 @@
+# One-command server setup:  docker compose up -d --build
+# Put your settings in .env (copy .env.production.example). Data lives in the "rts-data" volume.
+services:
+  app:
+    build: .
+    image: resume-tailoring:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      RTS_HOST: 0.0.0.0
+      RTS_PORT: "8000"
+      RTS_FORWARDED_ALLOW_IPS: "*"
+    ports:
+      - "127.0.0.1:8000:8000"    # only reachable through the HTTPS proxy on the same server
+    volumes:
+      - rts-data:/app/data
+
+volumes:
+  rts-data:

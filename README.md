@@ -202,6 +202,10 @@ Passwords are stored as salted PBKDF2 hashes. Sessions use HttpOnly cookies; cha
 same-site request header. Sign-in attempts are rate-limited. Members can't see or even confirm the
 existence of candidates that aren't assigned to them.
 
+## Deploying
+
+See **[DEPLOY.md](DEPLOY.md)**: Docker image, hosting options, settings, Google Drive on the live site, backups.
+
 ## Before going online
 
 - Host behind **HTTPS**, set `RTS_SECURE_COOKIES=1` and `RTS_PUBLIC_URL=https://your-domain`, and add the

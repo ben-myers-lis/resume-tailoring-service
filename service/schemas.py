@@ -97,6 +97,7 @@ class LoginIn(BaseModel):
 
 
 class SetupIn(BaseModel):
+    setup_code: Optional[str] = Field(None, max_length=200)
     name: str = Field(min_length=1, max_length=200)
     email: str = Field(max_length=200)
     password: str = Field(max_length=200)

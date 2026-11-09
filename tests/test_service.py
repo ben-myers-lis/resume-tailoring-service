@@ -487,3 +487,35 @@ def test_screening_reads_field_from_text_when_title_unknown():
     job = {"role": "Untitled job", "text": "Build LLM-powered product features. Required: 3+ years of software engineering; Python."}
     assert screen(mle, job, date(2026, 11, 8))["fit_score"] >= 80
     assert screen(acct, job, date(2026, 11, 8))["fit_score"] < 40
+
+
+def test_setup_code_required_when_configured(tmp_path):
+    """On a public server, RTS_SETUP_CODE stops strangers from claiming the administrator account."""
+    port = free_port()
+    settings = Settings(ai_provider="mock", db_path=tmp_path / "s.db", files_dir=tmp_path / "f", make_pdf=False,
+                        password_iterations=1000, setup_code="let-me-in-123")
+    srv = uvicorn.Server(uvicorn.Config(create_app(settings, start_workers=False), host="127.0.0.1", port=port, log_level="warning"))
+    t = threading.Thread(target=srv.run, daemon=True)
+    t.start()
+    while not srv.started:
+        time.sleep(0.05)
+    try:
+        c = Client(f"http://127.0.0.1:{port}")
+        assert c.call("GET", "/api/auth/state")[1]["setup_code_required"] is True
+        body = {"name": "A", "email": "a@example.com", "password": PW}
+        assert c.call("POST", "/api/auth/setup", body)[0] == 403
+        assert c.call("POST", "/api/auth/setup", {**body, "setup_code": "wrong"})[0] == 403
+        assert c.call("POST", "/api/auth/setup", {**body, "setup_code": "let-me-in-123"})[0] == 201
+    finally:
+        srv.should_exit = True
+        t.join(10)
+
+
+def test_port_from_hosting_platform(monkeypatch):
+    monkeypatch.delenv("RTS_PORT", raising=False)
+    monkeypatch.setenv("PORT", "10000")
+    import importlib, service.config as cfg
+    importlib.reload(cfg)
+    assert cfg.Settings().port == 10000
+    monkeypatch.delenv("PORT")
+    importlib.reload(cfg)

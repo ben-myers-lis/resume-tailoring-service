@@ -198,14 +198,16 @@ function loginPage() {
   authPage("Sign in", null, form);
 }
 
-function setupPage() {
+function setupPage(codeRequired) {
+  const code = h("input", { type: "password", autocomplete: "off" });
   const name = h("input", { type: "text" }), email = h("input", { type: "email", autocomplete: "username" });
   const pw = h("input", { type: "password", autocomplete: "new-password" });
   const form = h("form", { onsubmit: async (e) => {
     e.preventDefault();
-    try { const r = await api("POST", "/api/auth/setup", { name: name.value, email: email.value, password: pw.value }); S.me = r.user; toast("Welcome! Your administrator account is ready."); location.hash = "#/"; }
+    try { const r = await api("POST", "/api/auth/setup", { setup_code: codeRequired ? code.value : null, name: name.value, email: email.value, password: pw.value }); S.me = r.user; toast("Welcome! Your administrator account is ready."); location.hash = "#/"; }
     catch (err) { showFieldErrors(form, err); toast(err.message, true); }
   } }, h("div", { class: "notice" }, "First-time setup: create the administrator account. You'll have full control and can invite your team."),
+  codeRequired ? field("Setup code", code, "from the server's RTS_SETUP_CODE setting", "setup_code") : null,
   field("Your name", name, null, "name"), field("Email", email, null, "email"),
   field("Password", pw, "10+ characters, upper and lower case, a number", "password"),
   h("button", { class: "primary", type: "submit", style: "width:100%;justify-content:center" }, "Create administrator account"));
@@ -956,7 +958,7 @@ async function router() {
     if (seg[0] === "invite" && seg[1]) { if (!S.me) return invitePage(seg[1]); }
     if (!S.me) {
       const st = await api("GET", "/api/auth/state");
-      if (st.needs_setup) return setupPage();
+      if (st.needs_setup) return setupPage(st.setup_code_required);
       if (!st.user) return loginPage();
       S.me = st.user;
     }

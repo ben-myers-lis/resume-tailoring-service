@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install LibreOffice (PDF output)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-writer-nogui fonts-crosextra-carlito
+
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Run tests (mock AI, simulated Google Drive; no secrets needed)
+        run: python -m pytest -q tests
+
+      - name: Check the prompt package's own tests
+        working-directory: prompt_package
+        run: python -m unittest discover -s tests
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the production image
+        run: docker build -t resume-tailoring:ci .
+      - name: Start it and check health
+        run: |
+          docker run -d --name rts -p 8000:8000 -e RTS_AI_PROVIDER=mock resume-tailoring:ci
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/api/health && exit 0; sleep 2; done
+          docker logs rts; exit 1
