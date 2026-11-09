@@ -217,6 +217,11 @@ def test_vercel_config_files_agree():
         minute, hour, *rest = cron["schedule"].split()
         assert re.fullmatch(r"\d+", minute) and re.fullmatch(r"\d+", hour), "Hobby plans allow daily crons only"
     assert "Dockerfile" in (ROOT / ".vercelignore").read_text().split()
+    # Vercel reads the entry file without running it and needs a top-level `app = ...` assignment.
+    import ast
+    tree = ast.parse((ROOT / f"{module}.py").read_text())
+    assert any(isinstance(n, ast.Assign) and any(getattr(t, "id", None) == attr for t in n.targets)
+               for n in tree.body), "main.py must assign `app` at top level"
 
 
 def test_entry_point_imports_without_a_database():
@@ -225,8 +230,9 @@ def test_entry_point_imports_without_a_database():
     import subprocess
     env = {k: v for k, v in os.environ.items() if k not in ("DATABASE_URL", "RTS_DATABASE_URL", "POSTGRES_URL")}
     env["VERCEL"] = "1"
-    code = "import main, rts_worker; assert main._real is None; print('ok')" \
-        if _has_vercel_sdk() else "import main; assert main._real is None; print('ok')"
+    check = "from starlette.applications import Starlette; assert isinstance(main.app, Starlette); " \
+            "assert main._real is None; print('ok')"
+    code = ("import main, rts_worker; " if _has_vercel_sdk() else "import main; ") + check
     out = subprocess.run([sys.executable, "-c", code], cwd=ROOT, env=env, capture_output=True, text=True, timeout=60)
     assert out.returncode == 0 and out.stdout.strip() == "ok", out.stderr
 

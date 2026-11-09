@@ -13,6 +13,9 @@ import asyncio
 import logging
 import threading
 
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("rts.main")
 
@@ -35,17 +38,27 @@ async def _get_app():
     return _real if _real is not None else await asyncio.to_thread(_build_once)
 
 
-async def app(scope, receive, send):
-    try:
-        real = await _get_app()
-    except Exception as e:                      # e.g. no database connected yet
-        log.exception("the app could not start")
-        if scope["type"] == "lifespan":
-            raise
-        if scope["type"] == "http":
-            body = f"Resume Tailoring could not start: {e}\n".encode()
-            await send({"type": "http.response.start", "status": 503,
-                        "headers": [(b"content-type", b"text/plain; charset=utf-8")]})
-            await send({"type": "http.response.body", "body": body})
-        return
-    await real(scope, receive, send)
+class _StartApp:
+    """Middleware that hands every request (and lifespan event) to the real app, built on first use."""
+
+    def __init__(self, _router):            # Starlette's own router is never used
+        pass
+
+    async def __call__(self, scope, receive, send):
+        try:
+            real = await _get_app()
+        except Exception as e:                  # e.g. no database connected yet
+            log.exception("the app could not start")
+            if scope["type"] == "lifespan":
+                raise
+            if scope["type"] == "http":
+                body = f"Resume Tailoring could not start: {e}\n".encode()
+                await send({"type": "http.response.start", "status": 503,
+                            "headers": [(b"content-type", b"text/plain; charset=utf-8")]})
+                await send({"type": "http.response.body", "body": body})
+            return
+        await real(scope, receive, send)
+
+
+# A plain top-level Starlette instance named `app`: the form Vercel's build looks for.
+app = Starlette(middleware=[Middleware(_StartApp)])
