@@ -242,14 +242,32 @@ def test_prompt_version_files_and_checks():
     assert pr.with_defaults(old) == files and pr.pipeline_of(old) == "full"
 
 
-def test_older_versions_get_new_files_and_v2_is_seeded_once(tmp_path):
+def test_new_install_starts_on_v2_with_v1_restorable(tmp_path):
     from support import make_db, make_settings
     from service.pipeline import ensure_prompt_versions
+    db = make_db(make_settings(db_path=tmp_path / "new.db", files_dir=tmp_path / "f"))
+    ensure_prompt_versions(db)
+    ensure_prompt_versions(db)                                   # a second start changes nothing
+    versions = {v["number"]: v for v in db.list_prompt_versions()}
+    assert {n: v["status"] for n, v in versions.items()} == {1: "ARCHIVED", 2: "ACTIVE"}
+    assert pr.pipeline_of(db.active_prompt_version()["files"]) == "fast"
+    assert pr.pipeline_of(db.get_prompt_version(versions[1]["id"])["files"]) == "full"
+
+
+def test_existing_install_gets_v2_as_a_draft_only_once(tmp_path):
+    """An installation that already made resumes keeps its active version until the admin publishes."""
+    from support import make_db, make_settings
+    from service.pipeline import ensure_prompt_versions
+    from test_service import JOB, STRONG
     db = make_db(make_settings(db_path=tmp_path / "old.db", files_dir=tmp_path / "f"))
     old = {k: v for k, v in pr.package_files().items() if not k.startswith(("fast/", "settings/"))}
     v1 = db.create_prompt_version(old, "ACTIVE", None, None, "from an earlier release")
+    u = db.create_user("o@example.com", "O", "x", "ADMIN", [])
+    db.create_run(u["id"], db.create_candidate(u["id"], STRONG)["id"], db.create_job(u["id"], JOB)["id"],
+                  True, "APPLICATION")
     ensure_prompt_versions(db)
     assert set(db.get_prompt_version(v1["id"])["files"]) == set(pr.EDITABLE)
+    assert db.active_prompt_version()["id"] == v1["id"]
     drafts = [v for v in db.list_prompt_versions() if v["status"] == "DRAFT"]
     assert len(drafts) == 1 and pr.pipeline_of(db.get_prompt_version(drafts[0]["id"])["files"]) == "fast"
     db.delete_prompt_version(drafts[0]["id"])
@@ -257,8 +275,8 @@ def test_older_versions_get_new_files_and_v2_is_seeded_once(tmp_path):
     assert not [v for v in db.list_prompt_versions() if v["status"] == "DRAFT"]
 
 
-# ---------- through the app: test v2 against v1, publish it, live runs use it ----------
-def test_compare_publish_and_live_runs_through_the_app(tmp_path):
+# ---------- through the app: live runs on v2, v1 still comparable ----------
+def test_live_runs_use_v2_and_v1_can_be_compared_through_the_app(tmp_path):
     import threading
     import time
 
@@ -287,30 +305,30 @@ def test_compare_publish_and_live_runs_through_the_app(tmp_path):
         for cid in (strong, title_only):
             assert a.call("POST", "/api/prompts/test-cases", {"candidate_id": cid, "job_id": job})[0] == 201
 
+        # A new installation runs live resumes on the fast v2.
         _, home = a.call("GET", "/api/prompts")
-        v2 = next(v for v in home["versions"] if v["pipeline"] == "fast")
-        _, full = a.call("GET", f"/api/prompts/versions/{v2['id']}")
-        assert full["pipeline"] == "fast" and full["diff"] and full["diff"][0]["file"] == pr.PIPELINE_FILE
-        assert "Run a test round" in " ".join(full["checks"]["blockers"])
-
-        _, rnd = a.call("POST", f"/api/prompts/versions/{v2['id']}/tests", {"compare": True})
-        rnd = wait_round(a, rnd["id"])
-        assert rnd["state"] == "PASSED"
-        for case in rnd["cases"]:
-            assert case["draft"]["pipeline"] == "fast" and case["compare"]["pipeline"] == "full"
-            for side in (case["draft"], case["compare"]):
-                assert side["grade"], (side["status"], side.get("error"), side.get("delivery_status"), side.get("resume_markdown") is None)
-                assert side["grade"]["score"] >= 1 and side["grade"]["unsupported_claims"] == []
-        assert rnd["summary"]["draft"]["runs"] == 2 and rnd["summary"]["compare"]["graded"] == 2
-
-        code, res = a.call("POST", f"/api/prompts/versions/{v2['id']}/publish", {"note": "Fast pipeline"})
-        assert code == 200, res
+        active = next(v for v in home["versions"] if v["status"] == "ACTIVE")
+        v1 = next(v for v in home["versions"] if v["number"] == 1)
+        assert active["pipeline"] == "fast" and v1["pipeline"] == "full" and v1["status"] == "ARCHIVED"
         _, run = a.call("POST", f"/api/candidates/{strong}/tailor", {"jd_text": JOB["text"], "title": JOB["role"]})
         done = a.wait(run["run"]["id"])
-        assert done["status"] == "DONE" and done["prompt_version_id"] == v2["id"]
+        assert done["status"] == "DONE" and done["prompt_version_id"] == active["id"]
         stored = app.state.db.get_run(done["id"])["result"]
         assert stored["pipeline"] == "fast" and "grade" not in stored            # live runs aren't graded
         code, pdf = a.call("GET", f"/api/runs/{done['id']}/resume.pdf", raw=True)
         assert code == 200 and pdf.startswith(b"%PDF")
+
+        # A draft from v1 (full pipeline) can still be compared with the active v2, same grader for both.
+        _, draft = a.call("POST", "/api/prompts/versions", {"based_on": v1["id"]})
+        _, full = a.call("GET", f"/api/prompts/versions/{draft['id']}")
+        assert full["pipeline"] == "full"
+        _, rnd = a.call("POST", f"/api/prompts/versions/{draft['id']}/tests", {"compare": True})
+        rnd = wait_round(a, rnd["id"])
+        assert rnd["state"] == "PASSED"
+        for case in rnd["cases"]:
+            assert case["draft"]["pipeline"] == "full" and case["compare"]["pipeline"] == "fast"
+            for side in (case["draft"], case["compare"]):
+                assert side["grade"]["score"] >= 1 and side["grade"]["unsupported_claims"] == []
+        assert rnd["summary"]["draft"]["runs"] == 2 and rnd["summary"]["compare"]["graded"] == 2
     finally:
         srv.should_exit = True

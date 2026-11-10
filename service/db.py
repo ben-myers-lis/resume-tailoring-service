@@ -832,6 +832,14 @@ class DB:
         row = self._fetchone("SELECT value FROM app_settings WHERE key=?", (key,))
         return json.loads(row["value"]) if row and row["value"] is not None else default
 
+    def claim_setting(self, key: str, value="1") -> bool:
+        """Set a key only if it isn't set yet. True for the one caller that set it (safe across instances)."""
+        return self._exec("INSERT INTO app_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO NOTHING",
+                          (key, self._dump(value))).rowcount == 1
+
+    def has_runs(self) -> bool:
+        return self._fetchone("SELECT 1 FROM runs LIMIT 1") is not None
+
     def set_setting(self, key: str, value) -> None:
         self._exec("INSERT INTO app_settings (key, value) VALUES (?, ?) "
                    "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (key, self._dump(value)))

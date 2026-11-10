@@ -125,12 +125,14 @@ those sources, and catches another employer's name inside a role. A Haiku check 
 Sonnet fixes only the flagged lines. Anything still unsupported is removed. If the summary can't be
 fixed, the resume is marked *Needs review*; an unresolved serious problem withholds it, as in v1.
 
-On first start the app adds **a v2 draft** next to your active v1. To compare them, add test cases,
-open the draft and run a test round with *Compare side by side*. Each resume from either version is
+A **new installation starts with v2 active**, and v1 (your original prompt set) kept as an earlier
+version you can restore with one click from its page. An installation that already has resumes gets v2
+as a **draft** instead, so its live resumes never switch without you. To compare the two, add test cases, create a
+draft from the version you want to compare and run a test round with *Compare side by side*. Each resume from either version is
 graded by the same fixed judge, which uses your assessment rubric. It reports unsupported claims,
 requirements the inputs support but the resume misses, and a 1–5 score, with averages for time,
 cost and grade per version. Grading runs only in test rounds (about $0.02 per resume with Claude).
-Publish v2 when you're satisfied; you can restore v1 at any time.
+You can restore v1 at any time.
 
 ### Google Drive (resume links)
 

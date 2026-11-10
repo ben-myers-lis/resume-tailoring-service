@@ -77,9 +77,15 @@ resumes.yourcompany.com {
 
 ## 3c. Vercel
 
-**Plan:** use **Pro**. The free Hobby plan is for non-commercial personal use only, and it stops any
-function after 5 minutes, while a real Claude tailoring run currently takes 3–6 minutes. (With the mock AI,
-Hobby is fine for a trial.)
+**Plan:** the free **Hobby** plan works for non-commercial projects. It stops any function after
+5 minutes, and the fast v2 pipeline, which is active on new installations, takes about 11–25 seconds per
+resume. Use **Pro** if the project is commercial (Hobby doesn't allow commercial use), or if you
+publish the full v1 pipeline (3–6 minutes per resume).
+
+On Hobby, watch the included limits in the **Usage** tab. Going over pauses the site until usage in
+the rolling 30 days falls back. At ~1,500 resumes a week, the one to watch is **Active CPU** (4 hours
+a month). The free Neon database holds 1 GB, roughly two months of resumes at that volume, because the
+Word and PDF files are stored in it.
 
 1. **Import the repo.** Vercel dashboard → **Add New → Project** → import `resume-tailoring-service`.
    Keep the defaults (no build command); Vercel reads `pyproject.toml` and `vercel.json`. The
@@ -98,7 +104,8 @@ Hobby is fine for a trial.)
    | `RTS_WORKERS` | Resumes processed at once (default 4); keep within your Anthropic rate limits |
 
    Not needed on Vercel: `RTS_SECURE_COOKIES`, `RTS_FORWARDED_ALLOW_IPS`, `RTS_DB`, `RTS_FILES`, `RTS_PORT`.
-4. **Time limit.** Settings → **Functions** → Advanced Settings → **Function Max Duration** → `800` → Save.
+4. **Time limit (Pro only, and only for the v1 pipeline).** Settings → **Functions** → Advanced Settings →
+   **Function Max Duration** → `800` → Save. Skip this on Hobby.
    This applies to the queue function that does the tailoring. (`vercel.json` keeps web requests at 300 s.)
 5. **Deploy**, then open `https://<your-app>/api/health`. It should show
    `"queue": "vercel", "database": "postgres", "files": "db"`.
@@ -155,7 +162,7 @@ After you merge into `main`: managed hosts redeploy automatically; on your own s
 - [ ] Repository is private
 - [ ] Docker host: one instance, persistent volume at `/app/data`, ≥ 1 GB RAM;
       `RTS_PUBLIC_URL` (https), `RTS_SECURE_COOKIES=1`, `RTS_FORWARDED_ALLOW_IPS=*`, `RTS_SETUP_CODE`
-- [ ] Vercel: Pro plan, Neon database connected, `RTS_SETUP_CODE`, `CRON_SECRET`, Function Max Duration 800,
+- [ ] Vercel: Hobby (non-commercial, v2 active) or Pro; Neon database connected, `RTS_SETUP_CODE`, `CRON_SECRET`,
       `/api/health` shows `vercel` / `postgres` / `db`
 - [ ] Administrator account created
 - [ ] Claude API key set and spend limit configured

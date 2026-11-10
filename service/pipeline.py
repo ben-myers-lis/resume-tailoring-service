@@ -104,7 +104,12 @@ FAST_SEED_KEY = "seed.fast_v2_draft"
 
 
 def ensure_prompt_versions(db: DB) -> None:
-    """Start-up: v1 from the package on disk, new files for older versions, and the v2 draft once."""
+    """Start-up: v1 from the package on disk, new files for older versions, and the fast v2 once.
+
+    A new installation starts with v2 (fast) active and v1 (your original prompt set) archived,
+    so it can be restored with one click. An existing installation that already has resumes gets
+    v2 as a draft instead, so live resumes never switch pipeline without the administrator.
+    """
     from .prompts import PIPELINE_FILE, package_files
     if db.count_prompt_versions() == 0:
         try:
@@ -119,14 +124,18 @@ def ensure_prompt_versions(db: DB) -> None:
         filled = with_defaults(v["files"])
         if filled is not v["files"]:
             db.fill_prompt_files(vid, filled)
-    if not db.get_setting(FAST_SEED_KEY):        # once, so deleting the draft keeps it deleted
+    # Once per installation (and by one instance only), so a deleted v2 draft stays deleted.
+    if db.claim_setting(FAST_SEED_KEY):
         active = db.active_prompt_version()
         if active:
+            new_install = not db.has_runs() and db.count_prompt_versions() == 1
             files = {**with_defaults(active["files"]), PIPELINE_FILE: "fast\n"}
-            db.create_prompt_version(files, "DRAFT", None, active["id"],
-                                     "Fast pipeline (v2): about 11–25 s and $0.01–0.03 per resume (estimates). "
-                                     "Run a test round against the active version, then publish.")
-        db.set_setting(FAST_SEED_KEY, "1")
+            note = ("Fast pipeline (v2): about 11–25 s and $0.01–0.03 per resume (estimates). "
+                    + ("Active from the first start; v1 (your original prompt set) can be restored from its page."
+                       if new_install else "Run a test round against the active version, then publish."))
+            v2 = db.create_prompt_version(files, "DRAFT", None, active["id"], note)
+            if new_install:
+                db.activate_prompt_version(v2["id"], None)
 
 
 def delete_run_files(db: DB, settings: Settings, runs: list[dict]) -> None:

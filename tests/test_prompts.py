@@ -68,7 +68,7 @@ def wait_round(c: Client, rid: str, timeout=60) -> dict:
 def test_v1_seeded_and_active(env):
     _, home = env["admin"].call("GET", "/api/prompts")
     assert [(v["number"], v["status"], v["pipeline"]) for v in home["versions"]] == \
-        [(2, "DRAFT", "fast"), (1, "ACTIVE", "full")]          # v2 = the fast pipeline, ready to test
+        [(2, "ACTIVE", "fast"), (1, "ARCHIVED", "full")]       # new installs start on the fast v2
     assert home["can_publish"] is True
 
 
@@ -124,7 +124,7 @@ def test_publish_gating_and_version_tracking(env):
     code, res = a.call("POST", f"/api/prompts/versions/{vid}/publish", {"note": "Shorter summaries"})
     assert code == 200 and res["number"] == 3
     _, home = a.call("GET", "/api/prompts")
-    assert {v["number"]: v["status"] for v in home["versions"]} == {3: "ACTIVE", 2: "DRAFT", 1: "ARCHIVED"}
+    assert {v["number"]: v["status"] for v in home["versions"]} == {3: "ACTIVE", 2: "ARCHIVED", 1: "ARCHIVED"}
     # published versions are read-only
     assert a.call("PUT", f"/api/prompts/versions/{vid}/files", {"files": {DRAFT: "x"}})[0] == 409
     # new live resumes record v2
