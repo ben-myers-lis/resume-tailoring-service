@@ -67,7 +67,8 @@ def wait_round(c: Client, rid: str, timeout=60) -> dict:
 
 def test_v1_seeded_and_active(env):
     _, home = env["admin"].call("GET", "/api/prompts")
-    assert [(v["number"], v["status"]) for v in home["versions"]] == [(1, "ACTIVE")]
+    assert [(v["number"], v["status"], v["pipeline"]) for v in home["versions"]] == \
+        [(2, "DRAFT", "fast"), (1, "ACTIVE", "full")]          # v2 = the fast pipeline, ready to test
     assert home["can_publish"] is True
 
 
@@ -86,7 +87,7 @@ def test_member_drafts_tests_but_cannot_publish(env):
     code, tc = m.call("POST", "/api/prompts/test-cases", {"candidate_id": ids["strong"], "job_id": ids["job"]})
     assert code == 201
     code, v = m.call("POST", "/api/prompts/versions", {"note": "Shorter summaries"})
-    assert code == 201 and v["status"] == "DRAFT" and v["number"] == 2
+    assert code == 201 and v["status"] == "DRAFT" and v["number"] == 3
     _, full = m.call("GET", f"/api/prompts/versions/{v['id']}")
     text = full["files"][DRAFT] + "\nKeep the summary under 50 words."
     code, saved = m.call("PUT", f"/api/prompts/versions/{v['id']}/files", {"files": {DRAFT: text}})
@@ -121,15 +122,15 @@ def test_publish_gating_and_version_tracking(env):
     _, rnd = a.call("POST", f"/api/prompts/versions/{vid}/tests", {"compare": False})
     assert wait_round(a, rnd["id"])["state"] == "PASSED"
     code, res = a.call("POST", f"/api/prompts/versions/{vid}/publish", {"note": "Shorter summaries"})
-    assert code == 200 and res["number"] == 2
+    assert code == 200 and res["number"] == 3
     _, home = a.call("GET", "/api/prompts")
-    assert {v["number"]: v["status"] for v in home["versions"]} == {2: "ACTIVE", 1: "ARCHIVED"}
+    assert {v["number"]: v["status"] for v in home["versions"]} == {3: "ACTIVE", 2: "DRAFT", 1: "ARCHIVED"}
     # published versions are read-only
     assert a.call("PUT", f"/api/prompts/versions/{vid}/files", {"files": {DRAFT: "x"}})[0] == 409
     # new live resumes record v2
     _, run = a.call("POST", "/api/runs", {"candidate_id": ids["strong"], "job_id": ids["job"]})
     done = a.wait(run["id"])
-    assert done["prompt_version"] == "v2" and done["prompt_version_id"] == vid
+    assert done["prompt_version"] == "v3" and done["prompt_version_id"] == vid
 
 
 def test_protected_rules_need_confirmation(env):

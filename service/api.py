@@ -574,16 +574,35 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
             r.update(resume_markdown=res.get("resume_markdown"),
                      gaps=(res.get("draft") or {}).get("gaps"),
                      findings=[f for f in (res.get("assessment") or {}).get("findings", []) if not f.get("resolved")],
+                     pipeline=res.get("pipeline", "full"), grade=res.get("grade"),
                      files={k: f"/api/runs/{r['id']}/resume.{k}" for k in files} if a.can("resumes.tailor") else {})
             slot = cases.setdefault(key, {"candidate_name": r["candidate_name"], "job_role": r["job_role"],
                                           "job_company": r["job_company"], "draft": None, "compare": None})
             slot["draft" if r["prompt_version_id"] == rnd["version_id"] else "compare"] = r
         draft_runs = [r for r in runs if r["prompt_version_id"] == rnd["version_id"]]
         statuses = [r["status"] for r in draft_runs]
-        state = ("RUNNING" if any(s in ("QUEUED", "RUNNING") for s in statuses)
+        # Running until both sides finish (the comparison resumes too); only this version's failures fail it.
+        state = ("RUNNING" if any(r["status"] in ("QUEUED", "RUNNING") for r in runs)
                  else "FAILED" if "FAILED" in statuses else "PASSED")
         return {**rnd, "state": state, "cases": list(cases.values()),
-                "cost_usd": round(sum(r["cost_usd"] or 0 for r in runs), 4)}
+                "cost_usd": round(sum(r["cost_usd"] or 0 for r in runs), 4),
+                "summary": {side: _round_summary([c[side] for c in cases.values() if c[side]])
+                            for side in ("draft", "compare")}}
+
+    def _round_summary(runs: list[dict]) -> dict | None:
+        """Averages per side of a test round: time, cost, grade, unsupported claims, misses."""
+        done = [r for r in runs if r["status"] == "DONE"]
+        if not done:
+            return None
+        graded = [r["grade"] for r in done if r.get("grade") and "score" in r["grade"]]
+        avg = lambda xs: round(sum(xs) / len(xs), 2) if xs else None   # noqa: E731
+        return {"runs": len(done),
+                "seconds": avg([r["seconds"] for r in done if r.get("seconds") is not None]),
+                "cost_usd": avg([r["cost_usd"] for r in done if r.get("cost_usd") is not None]),
+                "score": avg([g["score"] for g in graded]),
+                "unsupported_claims": sum(len(g["unsupported_claims"]) for g in graded) if graded else None,
+                "missed_requirements": sum(len(g["missed_requirements"]) for g in graded) if graded else None,
+                "graded": len(graded)}
 
     def checks_for(v: dict) -> dict:
         active = db.active_prompt_version()
@@ -613,7 +632,10 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
     async def prompts_home(request):
         a = actor(request)
         require(a, "prompts.manage")
-        return ok({"versions": db.list_prompt_versions(),
+        versions = db.list_prompt_versions()
+        for x in versions:
+            x["pipeline"] = pr.pipeline_of(db.get_prompt_version(x["id"])["files"])
+        return ok({"versions": versions, "pipelines": pr.PIPELINES,
                    "test_cases": db.list_test_cases(a.visible_candidate_ids),
                    "protected_rules": pr.PROTECTED_RULES, "protected_files": pr.PROTECTED_FILES,
                    "can_publish": a.is_admin, "provider": settings.ai_provider})
@@ -641,6 +663,7 @@ def create_app(settings: Settings | None = None, start_workers: bool = True) -> 
         base = version_for(v["based_on"]) if v.get("based_on") else None
         compare_to = active if active and active["id"] != v["id"] else base
         return ok({**{k: x for k, x in v.items()}, "labels": pr.FILE_LABELS, "editable": pr.EDITABLE,
+                   "pipeline": pr.pipeline_of(v["files"]), "pipelines": pr.PIPELINES,
                    "compare_to": {"id": compare_to["id"], "number": compare_to["number"], "status": compare_to["status"]} if compare_to else None,
                    "diff": pr.diff(compare_to["files"], v["files"]) if compare_to else [],
                    "checks": checks_for(v), "proposals": db.list_proposals(v["id"]),

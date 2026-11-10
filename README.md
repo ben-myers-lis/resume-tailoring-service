@@ -104,6 +104,34 @@ but proposals and test resumes are placeholders: switch to Claude to judge real 
 Cost with Claude: about $0.15–0.25 per AI proposal (Opus by default, `RTS_PROMPT_MODEL`), plus the
 normal cost of each test resume.
 
+### Two pipelines: full (v1) and fast (v2)
+
+Each prompt version uses one of two pipelines (pick it at the top of a draft in Prompt Studio):
+
+| | Full (v1, your original prompt set) | Fast (v2) |
+|---|---|---|
+| Steps | Normalize → draft → full audit → repair → re-audit | One writing step → code checks → quick problems-only check → fix flagged items if needed |
+| AI output per resume | ~25–40K tokens (claim ledger, coverage map, audit) | ~1–3K tokens (the resume plus sources for each line) |
+| Estimated time | 3–6 minutes | ~11–25 seconds (more if a fix is needed) |
+| Estimated cost (Claude) | ~$0.25–0.50 | ~$0.01–0.03 |
+| 1,500 resumes | ~$380–620 | ~$20–45 |
+
+Estimates come from the real prompt sizes and typical output lengths. Each resume's report shows the
+actual time and cost once you switch to Claude.
+
+How v2 stays safe: it uses your core policy, protected rules included. Code checks every line for
+real sources and keeps evidence with its own role. It also rejects numbers and skills that aren't in
+those sources, and catches another employer's name inside a role. A Haiku check then looks for overstated claims, and
+Sonnet fixes only the flagged lines. Anything still unsupported is removed. If the summary can't be
+fixed, the resume is marked *Needs review*; an unresolved serious problem withholds it, as in v1.
+
+On first start the app adds **a v2 draft** next to your active v1. To compare them, add test cases,
+open the draft and run a test round with *Compare side by side*. Each resume from either version is
+graded by the same fixed judge, which uses your assessment rubric. It reports unsupported claims,
+requirements the inputs support but the resume misses, and a 1–5 score, with averages for time,
+cost and grade per version. Grading runs only in test rounds (about $0.02 per resume with Claude).
+Publish v2 when you're satisfied; you can restore v1 at any time.
+
 ### Google Drive (resume links)
 
 Every finished resume is uploaded automatically to **your** Google Drive, in a **Resume Tailoring** folder
@@ -201,6 +229,8 @@ Candidate names and contact details are not sent to Claude; they're added back w
 | `service/gdrive.py`, `drive_service.py` | Google Drive connection and uploads |
 | `service/prompts.py`, `prompt_ai.py` | Prompt versions, checks, diffs, AI proposals |
 | `service/screening.py` | Fit screening for title-only profiles |
+| `service/fast/` | Fast v2 pipeline: prompts, compact schemas, code checks, runner |
+| `service/grader.py` | Test-round grader (same judge for every version) |
 | `service/pipeline.py`, `worker.py` | Background tailoring queue |
 | `service/render.py`, `service/fonts/` | Word/PDF output (LibreOffice or ReportLab with the Carlito font, OFL) and page-count check |
 | `service/ai/` | Mock AI and Claude provider |

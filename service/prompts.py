@@ -12,7 +12,14 @@ import hashlib
 import json
 import re
 
+from pathlib import Path
+
 from .package import PACKAGE_DIR, stage_of
+
+FAST_DIR = Path(__file__).resolve().parent / "fast" / "prompts"
+PIPELINE_FILE = "settings/pipeline.txt"
+PIPELINES = {"full": "Full (v1: 4 AI steps with full audit, ~3–6 min)",
+             "fast": "Fast (v2: 1 writing step + quick check, ~11–25 s)"}
 
 EDITABLE = [
     "prompts/00_core.txt",
@@ -24,6 +31,10 @@ EDITABLE = [
     "prompts/07_prompt_maintenance.txt",
     "reference/assessment_rubric.txt",
     "reference/ai_keyword_catalog.json",
+    PIPELINE_FILE,
+    "fast/10_draft.txt",
+    "fast/11_check.txt",
+    "fast/12_fix.txt",
 ]
 FILE_LABELS = {
     "prompts/00_core.txt": "Core policy (used in every step)",
@@ -35,7 +46,13 @@ FILE_LABELS = {
     "prompts/07_prompt_maintenance.txt": "Prompt maintenance (used by Improve with AI)",
     "reference/assessment_rubric.txt": "Assessment rubric",
     "reference/ai_keyword_catalog.json": "Keyword catalog",
+    PIPELINE_FILE: "Pipeline: 'full' (v1) or 'fast' (v2)",
+    "fast/10_draft.txt": "Fast v2: write the tailored resume",
+    "fast/11_check.txt": "Fast v2: quick fact-check (problems only)",
+    "fast/12_fix.txt": "Fast v2: fix flagged items",
 }
+FAST_STAGE_FILES = {"FAST_DRAFT": "fast/10_draft.txt", "FAST_CHECK": "fast/11_check.txt",
+                    "FAST_FIX": "fast/12_fix.txt"}
 STAGE_FILES = {
     "NORMALIZE": "prompts/01_normalize.txt", "DRAFT": "prompts/02_draft.txt", "ASSESS": "prompts/03_assess.txt",
     "REPAIR": "prompts/04_repair.txt", "REVISION": "prompts/05_revision.txt",
@@ -48,12 +65,33 @@ PROTECTED_RULES = {
     "P06": "History, tenure and identity",
     "P12": "Metrics",
 }
-PROTECTED_FILES = {"prompts/03_assess.txt": "Fact-check and assessment step"}
+PROTECTED_FILES = {"prompts/03_assess.txt": "Fact-check and assessment step",
+                   "fast/11_check.txt": "Fast v2 fact-check step"}
 RULE_HEAD = re.compile(r"^(P\d\d) — ", re.M)
 
 
+def default_file(f: str) -> str:
+    if f == PIPELINE_FILE:
+        return "full\n"
+    if f.startswith("fast/"):
+        return (FAST_DIR / f.split("/", 1)[1]).read_text(encoding="utf-8")
+    return (PACKAGE_DIR / f).read_text(encoding="utf-8")
+
+
 def package_files() -> dict[str, str]:
-    return {f: (PACKAGE_DIR / f).read_text(encoding="utf-8") for f in EDITABLE}
+    """The files on disk: your v1 package, plus the fast v2 prompts (pipeline 'full')."""
+    return {f: default_file(f) for f in EDITABLE}
+
+
+def with_defaults(files: dict[str, str]) -> dict[str, str]:
+    """Fill in files added by an app update (e.g. the fast pipeline's prompts) for older versions."""
+    missing = [f for f in EDITABLE if f not in files]
+    return {**files, **{f: default_file(f) for f in missing}} if missing else files
+
+
+def pipeline_of(files: dict[str, str]) -> str:
+    value = (files.get(PIPELINE_FILE) or "full").strip().lower()
+    return value if value in PIPELINES else "full"
 
 
 def content_hash(files: dict[str, str]) -> str:
@@ -103,10 +141,12 @@ def structural_problems(files: dict[str, str]) -> list[str]:
     for f in EDITABLE:
         if not files.get(f, "").strip():
             problems.append(f"{f} is empty or missing")
-    for stage, f in STAGE_FILES.items():
+    for stage, f in {**STAGE_FILES, **FAST_STAGE_FILES}.items():
         first = files.get(f, "").lstrip().splitlines()[:1]
-        if not first or not first[0].upper().startswith(f"STAGE: {stage}"):
+        if not first or first[0].upper().split("/")[0].strip() != f"STAGE: {stage}":
             problems.append(f"{f} must start with the line 'STAGE: {stage}'")
+    if (files.get(PIPELINE_FILE) or "").strip().lower() not in PIPELINES:
+        problems.append(f"{PIPELINE_FILE} must contain 'full' or 'fast'")
     if "prompts/07_prompt_maintenance.txt" in files and not files["prompts/07_prompt_maintenance.txt"].lstrip().startswith("STAGE:"):
         problems.append("prompts/07_prompt_maintenance.txt must start with a 'STAGE:' line")
     missing = [r for r in PROTECTED_RULES if r not in rule_blocks(files.get(CORE, ""))]

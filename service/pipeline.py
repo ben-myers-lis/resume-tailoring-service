@@ -12,7 +12,8 @@ from .config import Settings
 from .db import DB
 from .package import PACKAGE_VERSION, build_request, runner
 from .render import render_files
-from .prompts import VersionedGenerator
+from .prompts import VersionedGenerator, pipeline_of, with_defaults
+from . import fast
 from .screening import screen
 from . import storage
 
@@ -40,13 +41,18 @@ def process_run(db: DB, settings: Settings, run: dict) -> None:
         log.info("run %s skipped (fit %s)", rid, fit["fit_score"])
         return
 
-    generator = make_generator(settings)
-    if version:
-        generator = VersionedGenerator(generator, version["files"])
+    files = with_defaults(version["files"]) if version else None
+    use_fast = bool(files) and pipeline_of(files) == "fast" and run["mode"] == "APPLICATION"
+    base["pipeline"] = "fast" if use_fast else "full"
+    inner = make_generator(settings)
+    generator = VersionedGenerator(inner, files) if files and not use_fast else inner
     try:
         request = build_request(run_id=rid, candidate=candidate, job=job, mode=run["mode"],
                                 max_repair_rounds=settings.max_repair_rounds)
-        result = runner.run_pipeline(request, generator)
+        if use_fast:
+            result = fast.run_fast(request, inner, files, max_fix_rounds=settings.max_repair_rounds)
+        else:
+            result = runner.run_pipeline(request, generator)
         if settings.file_store == "db":
             out_dir = Path(tempfile.mkdtemp(prefix=f"{rid}_"))
         else:
@@ -54,10 +60,14 @@ def process_run(db: DB, settings: Settings, run: dict) -> None:
         render = render_files(request, result, out_dir, make_pdf=settings.make_pdf, pdf_engine=settings.pdf_engine)
         storage.store_run_files(db, settings, rid, out_dir, render)
         usage = generator.usage_report()
+        if run.get("purpose") == "TEST":
+            from .grader import grade_run
+            result["grade"] = grade_run(settings, request, result)   # same judge for every version
+            usage = _add_usage(usage, result["grade"].get("usage"))
         db.finish_run(rid, status="DONE", fit_score=fit["fit_score"], fit=fit,
                       delivery_status=result["delivery_status"], result=_slim(result), usage=usage,
                       render=render, cost_usd=usage["total"]["cost_usd"],
-                      seconds=round(time.time() - t0, 2), **base)
+                      seconds=round(time.time() - t0, 2), **{k: v for k, v in base.items() if k != "pipeline"})
         log.info("run %s done: %s in %.1fs", rid, result["delivery_status"], time.time() - t0)
         if run.get("purpose", "LIVE") == "LIVE":
             from . import drive_service
@@ -67,20 +77,36 @@ def process_run(db: DB, settings: Settings, run: dict) -> None:
         usage = generator.usage_report() if hasattr(generator, "usage_report") else None
         db.finish_run(rid, status="FAILED", fit_score=fit["fit_score"], fit=fit, usage=usage,
                       error=f"{type(e).__name__}: {e}", cost_usd=(usage or {}).get("total", {}).get("cost_usd"),
-                      seconds=round(time.time() - t0, 2), **base)
+                      seconds=round(time.time() - t0, 2), **{k: v for k, v in base.items() if k != "pipeline"})
         log.warning("run %s failed: %s\n%s", rid, e, traceback.format_exc())
 
 
 def _slim(result: dict) -> dict:
     """Store what the app shows; the full request stays reproducible from the stored profile/job."""
     keep = ("delivery_status", "layout_status", "resume_markdown", "report", "draft", "assessment")
-    return {k: result[k] for k in keep}
+    out = {k: result[k] for k in keep}
+    out["pipeline"] = result.get("pipeline", "full")
+    if "grade" in result:
+        out["grade"] = {k: v for k, v in result["grade"].items() if k != "usage"}
+    return out
+
+
+def _add_usage(usage: dict, extra: dict | None) -> dict:
+    if not extra:
+        return usage
+    calls = list(usage.get("calls", [])) + list(extra.get("calls", []))
+    total = {k: round(usage["total"].get(k, 0) + extra["total"].get(k, 0), 4)
+             for k in ("input", "output", "cache_write", "cache_read", "seconds", "cost_usd")}
+    return {"calls": calls, "total": total}
+
+
+FAST_SEED_KEY = "seed.fast_v2_draft"
 
 
 def ensure_prompt_versions(db: DB) -> None:
-    """First start: the prompt package on disk becomes version 1 (active)."""
+    """Start-up: v1 from the package on disk, new files for older versions, and the v2 draft once."""
+    from .prompts import PIPELINE_FILE, package_files
     if db.count_prompt_versions() == 0:
-        from .prompts import package_files
         try:
             db.create_prompt_version(package_files(), "ACTIVE", None, None,
                                      "Initial version from Resume_Tailoring_Portable_v1")
@@ -88,6 +114,19 @@ def ensure_prompt_versions(db: DB) -> None:
             # Two instances starting at once (serverless): the other one created version 1 first.
             if db.count_prompt_versions() == 0:
                 raise
+    for vid in db.prompt_version_ids():          # files added by an app update (content unchanged)
+        v = db.get_prompt_version(vid)
+        filled = with_defaults(v["files"])
+        if filled is not v["files"]:
+            db.fill_prompt_files(vid, filled)
+    if not db.get_setting(FAST_SEED_KEY):        # once, so deleting the draft keeps it deleted
+        active = db.active_prompt_version()
+        if active:
+            files = {**with_defaults(active["files"]), PIPELINE_FILE: "fast\n"}
+            db.create_prompt_version(files, "DRAFT", None, active["id"],
+                                     "Fast pipeline (v2): about 11–25 s and $0.01–0.03 per resume (estimates). "
+                                     "Run a test round against the active version, then publish.")
+        db.set_setting(FAST_SEED_KEY, "1")
 
 
 def delete_run_files(db: DB, settings: Settings, runs: list[dict]) -> None:

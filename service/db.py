@@ -737,6 +737,13 @@ class DB:
         self._exec("UPDATE prompt_versions SET files=?, updated_at=? WHERE id=? AND status='DRAFT'",
                    (self._dump(files), now(), vid))
 
+    def fill_prompt_files(self, vid: str, files: dict) -> None:
+        """Add files introduced by an app update to any version (content of existing files unchanged)."""
+        self._exec("UPDATE prompt_versions SET files=? WHERE id=?", (self._dump(files), vid))
+
+    def prompt_version_ids(self) -> list[str]:
+        return [r["id"] for r in self._all("SELECT id FROM prompt_versions ORDER BY number")]
+
     def set_prompt_note(self, vid: str, note: str | None) -> None:
         self._exec("UPDATE prompt_versions SET note=?, updated_at=? WHERE id=?", (note, now(), vid))
 

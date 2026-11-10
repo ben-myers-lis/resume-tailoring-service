@@ -660,6 +660,7 @@ async function promptsPage() {
   const newDraft = async (based_on) => { try { const v = await api("POST", "/api/prompts/versions", based_on ? { based_on } : {}); toast(`Draft v${v.number} created.`); location.hash = `#/prompts/${v.id}`; } catch (e) { fail(e); } };
   const rows = home.versions.map((v) => h("tr", {},
     h("td", {}, h("a", { href: `#/prompts/${v.id}` }, h("strong", {}, `v${v.number}`))), h("td", {}, vBadge(v.status)),
+    h("td", {}, pipelineBadge(v.pipeline)),
     h("td", {}, v.note || h("span", { class: "muted" }, "—")),
     h("td", { class: "small" }, v.created_by_name || "System", h("div", { class: "muted" }, fmtDateTime(v.created_at))),
     h("td", { class: "small" }, v.published_at ? [v.published_by_name || "System", h("div", { class: "muted" }, fmtDateTime(v.published_at))] : h("span", { class: "muted" }, "—")),
@@ -687,7 +688,7 @@ async function promptsPage() {
     h("div", { class: "row" },
       h("div", { class: "grow", style: "min-width:420px" },
         h("div", { class: "card flush" }, h("div", { class: "card-head" }, h("h2", {}, "Versions")),
-          h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Version"), h("th", {}, "Status"), h("th", {}, "Note"), h("th", {}, "Created"), h("th", {}, "Published"), h("th", {}, ""))), h("tbody", {}, rows)))),
+          h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Version"), h("th", {}, "Status"), h("th", {}, "Pipeline"), h("th", {}, "Note"), h("th", {}, "Created"), h("th", {}, "Published"), h("th", {}, ""))), h("tbody", {}, rows)))),
         h("div", { class: "card flush" }, h("div", { class: "card-head" }, h("h2", {}, `Test set (${home.test_cases.length})`)),
           caseRows.length ? h("div", { class: "table-wrap" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Candidate"), h("th", {}, "Job"), h("th", {}, "Note"), h("th", {}, ""))), h("tbody", {}, caseRows)))
             : h("div", { class: "empty" }, "No test cases yet. Add 5–10 typical candidate + job pairs below."),
@@ -717,8 +718,12 @@ async function promptVersionPage(id, tab) {
   tab = tabs.some((t) => t[0] === tab) ? tab : tabs[0][0];
   const body = { improve: improveTab, test: testTab, changes: changesTab, files: filesTab, publish: publishTab }[tab](v);
   const canDelete = isDraft && (isAdmin() || v.created_by === S.me.id);
+  const picker = isDraft ? h("select", { title: "Which pipeline this version uses", onchange: async (e) => {
+      try { await api("PUT", `/api/prompts/versions/${v.id}/files`, { files: { "settings/pipeline.txt": e.target.value + "\n" } });
+        toast("Pipeline changed. Run a new test round before publishing."); promptVersionPage(id, tab); } catch (err) { fail(err); } } },
+    Object.entries(v.pipelines).map(([k, label]) => h("option", { value: k, selected: k === v.pipeline }, label))) : pipelineBadge(v.pipeline);
   render(page(`Prompt version v${v.number}`, [v.note, v.compare_to ? `compared with v${v.compare_to.number}` : null].filter(Boolean).join(" · "), [
-      vBadge(v.status),
+      vBadge(v.status), picker,
       !isDraft ? h("button", { onclick: async () => { try { const n = await api("POST", "/api/prompts/versions", { based_on: v.id }); location.hash = `#/prompts/${n.id}`; } catch (e) { fail(e); } } }, "New draft from this") : null,
       v.status === "ARCHIVED" && isAdmin() ? h("button", { class: "primary", onclick: () => modal(`Restore v${v.number}`, h("p", {}, `Make v${v.number} the active version again? New resumes will use it immediately.`), (close) => [
         h("button", { onclick: close }, "Cancel"), h("button", { class: "primary", onclick: async () => { try { await api("POST", `/api/prompts/versions/${v.id}/restore`); close(); toast(`v${v.number} is active again.`); promptVersionPage(id, tab); } catch (e) { fail(e); } } }, "Restore")]) }, "Restore this version") : null,
@@ -811,11 +816,40 @@ function roundView(r, v) {
   return h("div", { class: "card" },
     h("div", { class: "card-head" }, h("h2", { style: "margin:0" }, `Test round · ${fmtDateTime(r.created_at)}`),
       h("div", { class: "actions" }, badge(...ROUND_STATE[r.state]), r.cost_usd ? h("span", { class: "small muted" }, `$${r.cost_usd.toFixed(3)}`) : null)),
+    roundSummary(r, v, hasCompare),
     r.cases.map((c) => h("div", { style: "margin-bottom:22px" },
       h("h3", {}, `${c.candidate_name} → ${c.job_role}`, c.job_company ? h("span", { class: "muted" }, ` · ${c.job_company}`) : null),
       h("div", { class: hasCompare ? "compare" : "" },
         hasCompare ? runColumn(c.compare, "Active version") : null,
         runColumn(c.draft, `This version (v${v.number})`)))));
+}
+
+function pipelineBadge(p) {
+  return p === "fast" ? badge("Fast v2", "ok") : badge("Full v1", "");
+}
+
+function gradeLine(g) {
+  if (!g) return null;
+  if (g.error) return h("div", { class: "small muted" }, "Grading failed: ", g.error);
+  if (g.skipped) return h("div", { class: "small muted" }, g.skipped);
+  const unsupported = g.unsupported_claims.length, missed = g.missed_requirements.length;
+  return h("details", { class: "small", style: "margin-bottom:6px" },
+    h("summary", {}, h("strong", {}, `Grade ${g.score}/5`), ` · ${unsupported} unsupported claim${unsupported === 1 ? "" : "s"} · ${missed} missed requirement${missed === 1 ? "" : "s"}`),
+    h("p", { class: "muted" }, g.summary),
+    unsupported ? h("div", {}, h("strong", {}, "Unsupported:"), h("ul", {}, g.unsupported_claims.map((c) => h("li", {}, `“${c.text}”: ${c.reason}`)))) : null,
+    missed ? h("div", {}, h("strong", {}, "Missed (inputs support it):"), h("ul", {}, g.missed_requirements.map((m) => h("li", {}, m)))) : null);
+}
+
+function roundSummary(r, v, hasCompare) {
+  const s = r.summary || {};
+  if (!s.draft && !s.compare) return null;
+  const cell = (x, key, fmt) => h("td", {}, x && x[key] != null ? fmt(x[key]) : "—");
+  const row = (label, x) => h("tr", {}, h("td", {}, label), cell(x, "seconds", (n) => `${n}s`), cell(x, "cost_usd", (n) => `$${n.toFixed(3)}`),
+    cell(x, "score", (n) => `${n}/5`), cell(x, "unsupported_claims", String), cell(x, "missed_requirements", String));
+  return h("div", { class: "table-wrap", style: "margin-bottom:14px" }, h("table", {},
+    h("thead", {}, h("tr", {}, h("th", {}, "Average per resume"), h("th", {}, "Time"), h("th", {}, "Cost"), h("th", {}, "Grade"), h("th", {}, "Unsupported (total)"), h("th", {}, "Missed (total)"))),
+    h("tbody", {}, hasCompare && s.compare ? row("Active version", s.compare) : null, s.draft ? row(`This version (v${v.number})`, s.draft) : null)),
+    h("p", { class: "small muted" }, "Grades come from one fixed grader that uses your assessment rubric, the same for every version. Grading cost is included above."));
 }
 
 function runColumn(run, title) {
@@ -825,6 +859,7 @@ function runColumn(run, title) {
     h("div", { class: "actions", style: "margin-bottom:6px" }, h("strong", { class: "small" }, title), runBadge(run), deliveryBadge(run.delivery_status),
       run.seconds ? h("span", { class: "small muted" }, `${run.seconds}s`) : null, run.cost_usd ? h("span", { class: "small muted" }, `$${run.cost_usd.toFixed(3)}`) : null),
     run.error ? h("div", { class: "notice warn small" }, run.error) : null,
+    gradeLine(run.grade),
     run.resume_markdown ? resumePreview(run.resume_markdown) : (run.status === "DONE" ? h("div", { class: "notice warn small" }, "Withheld by the safety checks.") : null),
     findings.length ? h("details", { class: "small", style: "margin-top:6px" }, h("summary", {}, `${findings.length} open finding${findings.length === 1 ? "" : "s"} from the fact-check`),
       h("ul", {}, findings.map((f) => h("li", {}, `[${f.severity}] ${f.issue}`)))) : null);

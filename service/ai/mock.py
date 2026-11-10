@@ -40,7 +40,9 @@ class MockAI:
             time.sleep(self.delay)
         data = copy.deepcopy(input_data)
         handler = {"NORMALIZE": self._normalize, "DRAFT": self._draft, "REVISION": self._draft,
-                   "ASSESS": self._assess, "REPAIR": self._repair}[stage]
+                   "ASSESS": self._assess, "REPAIR": self._repair,
+                   "FAST_DRAFT": self._fast_draft, "FAST_CHECK": self._fast_check, "FAST_FIX": self._fast_fix,
+                   "GRADE": self._grade}[stage]
         out = handler(data)
         self.calls.append({"stage": stage, "model": "mock", "seconds": round(time.time() - t0, 2),
                            "input": 0, "output": 0, "cache_write": 0, "cache_read": 0, "cost_usd": 0.0,
@@ -249,6 +251,20 @@ class MockAI:
                 "confirmation_items": draft["confirmation_items"], "layout_status": "LAYOUT_UNVERIFIED",
                 "page_count": None, "summary": f"Mock assessment: {verdict}."}
 
+    def _fast_draft(self, data: dict) -> dict:
+        return _mock_fast_draft(data)
+
+    def _fast_check(self, data: dict) -> dict:
+        return {"problems": []}
+
+    def _fast_fix(self, data: dict) -> dict:
+        # Conservative: a flagged item is removed rather than rewritten.
+        return {"fixes": [{"item_id": f["item_id"], "text": "", "sources": [], "highlights": []}
+                          for f in data["flagged"]]}
+
+    def _grade(self, data: dict) -> dict:
+        return _mock_grade(data)
+
     def _repair(self, data: dict) -> dict:
         draft = copy.deepcopy(data["draft"])
         n = int(draft["revision_id"].rsplit("-", 1)[-1]) + 1
@@ -264,3 +280,49 @@ def _highlight(text: str) -> list[dict]:
         if m and m.group().lower() not in {"and", "built", "led", "used", "developed"}:
             return [{"phrase": m.group(), "occurrence": text[:m.start()].count(m.group()) + 1, "kind": "TECHNICAL"}]
     return []
+
+
+def _mock_fast_draft(data: dict) -> dict:
+    """Fast pipeline, mock writer: same rules as the full mock (nothing beyond the inputs)."""
+    prof, statements = data["profile"], data["statements"]
+    roles = prof["roles"]
+    total = data["total_years"]
+    years = f"{int(total)}+ years" if total >= 2 else f"{int(round(total * 12))} months"
+    latest = roles[0]
+    text = (f"{latest['title']} with {years} of experience across {len(roles)} role"
+            f"{'s' if len(roles) != 1 else ''}, most recently at {latest['company']}.")
+    sources = [r["role_id"] for r in roles]
+    if prof["education"]:
+        text += f" Education: {prof['education'][0]['text']}."
+        sources.append("EDU1")
+    items = []
+    for t in find_terms(" ".join(s["text"] for s in statements)):
+        cited = [s["source_id"] for s in statements if t.lower() in s["text"].lower()]
+        items.append({"text": t, "sources": cited})
+    skills = [{"items": items[i:i + 6]} for i in range(0, min(len(items), 24), 6)]
+    out_roles = []
+    for r in roles:
+        bullets = []
+        for st in [x for x in statements if x["role_id"] == r["role_id"]]:
+            b = re.sub(r"^I\s+", "", st["text"]).strip()
+            b = b[:1].upper() + b[1:]
+            bullets.append({"text": b, "sources": [st["source_id"]],
+                            "highlights": [h["phrase"] for h in _highlight(b)]})
+        out_roles.append({"role_id": r["role_id"], "scope": {"text": "", "sources": [], "highlights": []},
+                          "bullets": bullets[:8]})
+    said = " ".join(s["text"].lower() for s in statements)
+    gaps = [f"No supplied evidence for {t}" for t in data["jd_terms"] if t.lower() not in said][:8]
+    questions = [f"What did you build, own or improve as {r['title']} at {r['company']}?"
+                 for r in roles if not any(x["role_id"] == r["role_id"] for x in statements)][:5]
+    return {"summary": {"text": text, "sources": sources, "highlights": []}, "skills": skills,
+            "roles": out_roles, "gaps": gaps, "questions": questions}
+
+
+def _mock_grade(data: dict) -> dict:
+    """Mock grader: counts what it can see structurally; real judgement comes from Claude."""
+    resume = data["resume"]
+    reqs = data.get("jd_terms") or []
+    covered = [t for t in reqs if t.lower() in resume.lower()]
+    score = 3 if covered or not reqs else 2
+    return {"unsupported_claims": [], "missed_requirements": [t for t in reqs if t not in covered][:10],
+            "score": score, "summary": "Mock grade: structural checks only."}

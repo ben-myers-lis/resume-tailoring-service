@@ -31,6 +31,12 @@ STAGE_MODELS = {
     "REVISION": "claude-sonnet-5-5",
     "ASSESS": "claude-sonnet-5-5",
     "REPAIR": "claude-sonnet-5-5",
+    # Fast pipeline (service/fast): one writing call, a quick problems-only check, a targeted fix.
+    "FAST_DRAFT": "claude-sonnet-5-5",
+    "FAST_CHECK": "claude-haiku-5-5",
+    "FAST_FIX": "claude-sonnet-5-5",
+    # Test-round grader (same judge for every version, so comparisons are fair).
+    "GRADE": "claude-sonnet-5-5",
 }
 
 # Output can be long: the draft carries a claim ledger, coverage map and metric register.
@@ -40,6 +46,10 @@ STAGE_MAX_TOKENS = {
     "REVISION": 32000,
     "ASSESS": 16000,
     "REPAIR": 32000,
+    "FAST_DRAFT": 8000,
+    "FAST_CHECK": 3000,
+    "FAST_FIX": 4000,
+    "GRADE": 3000,
 }
 
 # USD per million tokens (Nov 2026). Haiku rates apply to prompts up to 100K tokens.

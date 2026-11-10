@@ -1,0 +1,15 @@
+STAGE: FAST_DRAFT
+Apply 00_core.txt. This is the fast pipeline. It replaces the claim ledger, coverage map, term decisions, metric register and bullet audit that the core policy describes: wherever the core policy asks for those records, the `sources` list on each item and the automatic checks after this step take their place. Every other rule in the core policy still applies, above all P03 (evidence and claims), P05 (JD coverage), P06 (history, tenure and identity), P10 (skills), P11 (summary and bullets), P12 (metrics) and P13 (highlighting).
+
+Input: `profile` (roles with role_id, title, company and dates, newest first; education as EDU1…; certifications as CERT1…), `statements` (the candidate's own words, each with a source_id and the role_id it belongs to; often empty), `jd` (role, company, text), `jd_terms` (technical terms found in the JD), `as_of_date`.
+
+Write one resume tailored to the JD, using only what the profile and statements support.
+- summary: 2–4 sentences. Seniority and years of experience come only from titles and dates. Name the field the titles show. Mention a JD-relevant strength only when a role title or a statement supports it.
+- skills: up to 4 groups of short items. Include an item only when it appears in a cited statement, or is plainly named by a cited role title (for example "Data Engineering" for a Data Engineer). Never add a JD term just because the JD asks for it.
+- roles: one entry per profile role, with the same role_id, in the same order. scope: at most one sentence about the role; leave it empty when nothing beyond the title is known. bullets: only from that role's own statements, rewritten concisely towards the JD; no bullets for a role without statements. Never move a statement to another role.
+- Numbers (percentages, counts, money, team sizes, durations) appear only when the same figure is in a cited statement. Years of experience may be worked out from the dates.
+- sources: every summary, scope, bullet and skill item lists the IDs that support it: role IDs (R1, R2…) for titles, companies and dates; EDU1…/CERT1… for education and certifications; S1… for statements.
+- highlights: up to 3 phrases per summary, scope or bullet worth bolding, copied exactly from its text (technical or business terms, not numbers or verbs). None in skills.
+- gaps: up to 8 short phrases naming JD requirements the inputs don't support.
+- questions: up to 5 short questions for the candidate whose answers would let a later resume add real bullets for this JD.
+Plain, specific wording. No first person, no buzzword filler, no invented employers, products, tools, responsibilities or results.

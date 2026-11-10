@@ -1,0 +1,4 @@
+STAGE: FAST_FIX
+Apply 00_core.txt. Input: `profile`, `statements`, `jd`, and `flagged`: resume items with the problems found in them.
+
+Rewrite only the flagged items so that each is fully supported by the sources it cites, while staying useful for the JD. Follow each problem's fix where it is correct. When an item can't be supported, return it with empty text to remove it. Keep the same item_id. Cite sources the same way (R1…, EDU1…, CERT1…, S1…), and give up to 3 exact highlight phrases for summary, scope and bullet items. Don't return items that weren't flagged.
